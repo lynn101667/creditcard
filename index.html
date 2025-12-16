@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>毛毛主人的信用卡 V54</title>
+    <title>毛爸毛媽的信用卡權益</title>
     
     <!-- PWA Settings -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="毛毛記帳">
-    <link rel="manifest" href='data:application/manifest+json,{"name":"毛毛記帳","short_name":"毛毛記帳","start_url":".","display":"standalone","background_color":"#f0f4f8","theme_color":"#6366F1","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/2382/2382461.png","sizes":"192x192","type":"image/png"}]}'>
+    <meta name="apple-mobile-web-app-title" content="毛爸毛媽的權益">
+    
+    <!-- Custom Icon -->
+    <link rel="icon" type="image/jpeg" href="https://drive.google.com/thumbnail?id=1wV-Acpnvj_3CXb_BHx4HPkLiLeqA6ItS&sz=s256">
+    <link rel="apple-touch-icon" href="https://drive.google.com/thumbnail?id=1wV-Acpnvj_3CXb_BHx4HPkLiLeqA6ItS&sz=s256">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -85,7 +88,11 @@
     <div class="sticky top-0 z-30 bg-white/80 backdrop-blur-md shadow-sm border-b border-white/50 transition-all duration-300">
         <div class="max-w-md mx-auto px-5 py-4">
             <div class="flex justify-between items-center mb-2">
-                <h1 class="text-indigo-600 text-xl font-bold flex items-center gap-2 tracking-wide" onclick="window.scrollTo({top:0, behavior:'smooth'})"><i data-lucide="paw-print" class="w-5 h-5 text-pink-500"></i> 毛毛主人的信用卡</h1>
+                <div class="flex items-center gap-2">
+                    <!-- Dynamic User Title -->
+                    <h1 class="text-indigo-600 text-xl font-bold flex items-center gap-2 tracking-wide" onclick="window.scrollTo({top:0, behavior:'smooth'})"><i data-lucide="paw-print" class="w-5 h-5 text-pink-500"></i> <span id="appTitle">毛爸毛媽的信用卡權益</span></h1>
+                    <span id="userBadge" class="text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-500 font-bold hidden shadow-sm border border-slate-200"></span>
+                </div>
                 <div id="totalSpendDisplay" class="text-slate-500 text-xs font-bold bg-indigo-50 px-3 py-1.5 rounded-full border border-indigo-100 hidden">本期 $0</div>
             </div>
             
@@ -107,8 +114,9 @@
                         <div id="toggleActiveSwitch" class="toggle-switch flex-shrink-0"></div>
                         <span class="text-xs font-bold text-slate-600">僅顯示消費信用卡</span>
                     </div>
+                    <!-- Settings Button -->
                     <button onclick="document.getElementById('cloudModal').classList.remove('hidden')" class="w-11 h-11 flex items-center justify-center bg-white border border-indigo-50 rounded-xl text-indigo-400 shadow-sm hover:text-indigo-600 active:scale-95 transition">
-                        <i data-lucide="cloud" class="w-5 h-5"></i>
+                        <i data-lucide="settings" class="w-5 h-5"></i>
                     </button>
                  </div>
 
@@ -201,9 +209,41 @@
         </div>
     </div>
 
-    <!-- Other Modals -->
+    <!-- Settings & Cloud Modal (Multi-User) -->
+    <div id="cloudModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in">
+            <h3 class="font-bold text-lg mb-4 text-slate-800 serif-font text-center">使用者設定</h3>
+            
+            <!-- User Switcher -->
+            <div class="bg-indigo-50 p-4 rounded-xl mb-5 border border-indigo-100">
+                <label class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-3 block text-center">選擇您的身分</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="btnUserLynn" onclick="switchUser('Lynn')" class="py-3 text-sm font-bold rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-pink-50 transition-all flex flex-col items-center gap-1 shadow-sm">
+                        <span class="text-2xl mb-1">🐱</span> Lynn
+                    </button>
+                    <button id="btnUserAndy" onclick="switchUser('Andy')" class="py-3 text-sm font-bold rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-blue-50 transition-all flex flex-col items-center gap-1 shadow-sm">
+                        <span class="text-2xl mb-1">🦁</span> Andy
+                    </button>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">記帳同步資料庫 (GAS)</label>
+                    <input type="text" id="gasUrl" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 outline-none" placeholder="https://script.google.com/..." readonly>
+                    <p class="text-[9px] text-slate-300 mt-1">* 系統自動帶入，無需修改</p>
+                </div>
+            </div>
+            
+            <div class="flex gap-2 mt-6">
+                <button onclick="document.getElementById('cloudModal').classList.add('hidden')" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">關閉</button>
+                <button onclick="syncWithCloud()" class="flex-1 py-3 rounded-xl bg-indigo-600 text-white font-bold shadow-md text-sm">立即同步</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Other Modals (SmallPay DB, Delete, Transaction) -->
     <div id="smallPayDbModal" class="fixed inset-0 bg-slate-900/60 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in"><h3 class="font-bold text-lg mb-1 text-slate-800 serif-font">匯入小額支付完整名單</h3><p class="text-xs text-slate-400 mb-4">貼上 CSV 網址</p><input type="text" id="smallPayCsvUrl" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 outline-none mb-2" placeholder="https://docs.google.com/..."><div class="flex gap-2"><button onclick="document.getElementById('smallPayDbModal').classList.add('hidden')" class="flex-1 py-2 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">取消</button><button onclick="saveSmallPayDb()" class="flex-1 py-2 rounded-xl bg-indigo-600 text-white font-bold shadow-md text-sm">匯入</button></div></div></div>
-    <div id="cloudModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in"><h3 class="font-bold text-lg mb-1 text-slate-800 serif-font">雲端資料庫設定</h3><p class="text-xs text-slate-400 mb-4">貼上 Apps Script 網址</p><input type="text" id="gasUrl" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 outline-none mb-2" placeholder="https://script.google.com/..."><div class="flex gap-2"><button onclick="document.getElementById('cloudModal').classList.add('hidden')" class="flex-1 py-2 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">取消</button><button onclick="saveCloudSettings()" class="flex-1 py-2 rounded-xl bg-indigo-600 text-white font-bold shadow-md text-sm">連結並同步</button></div></div></div>
     <div id="deleteConfirmModal" class="fixed inset-0 bg-slate-900/60 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in transform transition-all scale-100"><div class="flex flex-col items-center text-center mb-4"><div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-3"><i data-lucide="trash-2" class="w-6 h-6 text-red-500"></i></div><h3 class="font-bold text-lg text-slate-800">確定要刪除嗎？</h3><p class="text-xs text-slate-500 mt-1">刪除後將無法復原。</p></div><div class="flex gap-3"><button onclick="document.getElementById('deleteConfirmModal').classList.add('hidden')" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold text-sm">取消</button><button onclick="executeDelete()" class="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold shadow-md text-sm">確認刪除</button></div></div></div>
     
     <!-- Transaction Modal -->
@@ -224,63 +264,130 @@
 
     <!-- History & Settings Modals -->
     <div id="historyModal" class="fixed inset-0 bg-slate-50 z-50 hidden flex flex-col"><div class="bg-white border-b border-slate-100 p-4 pt-safe-top flex justify-between items-center shadow-sm z-10 sticky top-0"><div class="flex items-center gap-2"><button onclick="closeHistoryModal()" class="p-2 -ml-2 text-slate-400 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-6 h-6"></i></button><h2 class="text-lg font-bold text-slate-800 serif-font">歷史帳本</h2></div><div class="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full" id="historyTotalDisplay">$0</div></div><div class="flex-1 overflow-y-auto p-4 space-y-3" id="historyListContainer"></div></div>
-    <div id="settingsModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in"><h3 class="font-bold text-lg mb-1 text-slate-800 serif-font">卡片設定</h3><div class="space-y-4 mt-4"><div><label class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1.5 block">最佳回饋上限</label><div class="input-box-fixed"><span class="text-indigo-400 font-bold mr-2">$</span><input type="number" id="settingCap" class="flex-1 bg-transparent outline-none text-slate-700 font-bold text-lg h-6" placeholder="無上限"></div></div><div><label class="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-1.5 block">低消門檻</label><div class="input-box-fixed"><span class="text-orange-400 font-bold mr-2">$</span><input type="number" id="settingMin" class="flex-1 bg-transparent outline-none text-slate-700 font-bold text-lg h-6" placeholder="0"></div></div><div class="bg-slate-50 p-4 rounded-2xl border border-slate-100"><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block">計算週期</label><div class="flex gap-2 mb-3"><button type="button" onclick="setCycleMode('month')" id="btnCycleMonth" class="flex-1 py-2 text-xs font-bold rounded-lg border">日曆月</button><button type="button" onclick="setCycleMode('bill')" id="btnCycleBill" class="flex-1 py-2 text-xs font-bold rounded-lg border">結帳日</button></div><div id="billDateInputGroup" class="hidden flex items-center gap-2 justify-center"><span class="text-xs text-slate-500 font-bold">每月</span><input type="number" id="settingBillDay" min="1" max="31" class="w-14 text-center bg-white rounded-lg border border-slate-200 outline-none text-sm font-bold text-indigo-600 py-1.5" value="1"><span class="text-xs text-slate-500 font-bold">日 結帳</span></div></div></div><div class="flex gap-3 mt-6"><button onclick="closeSettingsModal()" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">取消</button><button onclick="saveCardSettings()" class="flex-1 py-3 rounded-xl bg-indigo-600 text-white font-bold shadow-md text-sm">確認</button></div></div></div>
+    <div id="cardSettingsModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in"><h3 class="font-bold text-lg mb-1 text-slate-800 serif-font" id="settingCardTitle">卡片設定</h3><div class="space-y-4 mt-4"><div><label class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1.5 block">最佳回饋上限</label><div class="input-box-fixed"><span class="text-indigo-400 font-bold mr-2">$</span><input type="number" id="settingCap" class="flex-1 bg-transparent outline-none text-slate-700 font-bold text-lg h-6" placeholder="無上限"></div></div><div><label class="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-1.5 block">低消門檻</label><div class="input-box-fixed"><span class="text-orange-400 font-bold mr-2">$</span><input type="number" id="settingMin" class="flex-1 bg-transparent outline-none text-slate-700 font-bold text-lg h-6" placeholder="0"></div></div><div class="bg-slate-50 p-4 rounded-2xl border border-slate-100"><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block">計算週期</label><div class="flex gap-2 mb-3"><button type="button" onclick="setCycleMode('month')" id="btnCycleMonth" class="flex-1 py-2 text-xs font-bold rounded-lg border">日曆月</button><button type="button" onclick="setCycleMode('bill')" id="btnCycleBill" class="flex-1 py-2 text-xs font-bold rounded-lg border">結帳日</button></div><div id="billDateInputGroup" class="hidden flex items-center gap-2 justify-center"><span class="text-xs text-slate-500 font-bold">每月</span><input type="number" id="settingBillDay" min="1" max="31" class="w-14 text-center bg-white rounded-lg border border-slate-200 outline-none text-sm font-bold text-indigo-600 py-1.5" value="1"><span class="text-xs text-slate-500 font-bold">日 結帳</span></div></div></div><div class="flex gap-3 mt-6"><button onclick="closeSettingsModal()" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">取消</button><button onclick="saveCardSettings()" class="flex-1 py-3 rounded-xl bg-indigo-600 text-white font-bold shadow-md text-sm">確認</button></div></div></div>
 
     <script>
+        // --- CONSTANTS ---
         const DEFAULT_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQhVkQJhNqPQAxXv-q0ethYeViFm69TyPnqRTmejQdwqgKtOvOLRbZ7toKBBTq7rWiqkQFMtGxvvWpC/pub?output=csv";
-        const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbx4fis6JsM0YYp1KUzRb0xAPnhJPqIgR-MVtc8AGWjLjbFCXHWT5xW2JqAsGiw_B0d1IQ/exec";
         const DEFAULT_SMALL_PAY_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSP7uOSfbfEnZx_TsDltCox5ubDR3f5ofOK7g-WEAp-y38coNSnY_VHfY1WuI8tqA/pub?output=csv";
+        
+        // Multi-User Config
+        const USER_CONFIGS = {
+            'Lynn': 'https://script.google.com/macros/s/AKfycbx4fis6JsM0YYp1KUzRb0xAPnhJPqIgR-MVtc8AGWjLjbFCXHWT5xW2JqAsGiw_B0d1IQ/exec',
+            'Andy': 'https://script.google.com/macros/s/AKfycbzBHPtqIfPWxbAmF6B7yQYT8jd4btfJycPiihUhqpLZwMXNRTM5PUsgURumPvpsVMNXHA/exec'
+        };
 
         const TX_CATEGORIES = ["🍽️ 餐飲", "🥦 食材", "🛍️ 購物", "🎬 娛樂", "💊 醫療", "🚌 交通", "⛽ 加油", "🐾 寵物", "✈️ 旅遊", "🛡️ 保險", "📚 課程", "💰 繳費", "📦 其他"];
         const TAIWAN_CITIES = ["台北市", "新北市", "基隆市", "桃園市", "新竹市", "新竹縣", "苗栗縣", "台中市", "彰化縣", "南投縣", "雲林縣", "嘉義市", "嘉義縣", "台南市", "高雄市", "屏東縣", "宜蘭縣", "花蓮縣", "台東縣"];
         
-        let SMALL_PAYMENT_CHAINS = [
-            "麥當勞", "肯德基", "漢堡王", "摩斯", "必勝客", "達美樂", "拿坡里",
-            "7-11", "全家", "萊爾富", "OK", "統一超商", 
-            "五十嵐", "50嵐", "清心", "清心福全", "CoCo", "都可", "茶湯會", 
-            "迷客夏", "鶴茶樓", "%Arabica", "可不可", "麻古", "大苑子",
-            "全聯", "美廉社", "家樂福超市",
-            "八方雲集", "三商巧福", "鬍鬚張", "爭鮮", "梁社漢",
-            "電話亭KTV", "停車場"
-        ];
-
+        // --- GLOBAL VARIABLES ---
+        let currentUser = localStorage.getItem('cc_current_user') || null;
+        let API_URL = "";
+        let transactions = [];
+        let cardSettings = {};
+        let allCardsData = [], uniqueBanks = [];
+        
+        let SMALL_PAYMENT_CHAINS = ["麥當勞", "肯德基", "漢堡王", "摩斯", "7-11", "全家", "萊爾富", "OK", "50嵐", "清心", "CoCo", "全聯", "美廉社", "八方雲集", "爭鮮", "電話亭KTV"];
         let SMALL_PAYMENT_STORES_DB = [];
 
-        let allCardsData = [], uniqueBanks = [];
-        let transactions = JSON.parse(localStorage.getItem('cc_transactions_v2') || '[]');
-        let cardSettings = JSON.parse(localStorage.getItem('cc_card_settings') || '{}');
         let currentView = 'manage'; 
         let showActiveOnly = false;
         let editingTransactionId = null;
-        let currentBankFilter = '';
-        let currentCardFilter = '';
-        let manageCardFilter = '';
-        let API_URL = localStorage.getItem('gas_api_url') || DEFAULT_API_URL;
-        const preloadedData = [{ bank: "玉山銀行", name: "Unicard", category: "百大特店", rate: 3.5, cap: "500點", desc: "簡單選...", tags: ["新光三越"], baseRate: "1%" }];
+        let currentBankFilter = '', currentCardFilter = '', manageCardFilter = '';
+        let editingCardId = null;
+
+        // Helper to get storage key based on user
+        const getStorageKey = (key) => currentUser ? `cc_${key}_${currentUser}` : null;
 
         function init() {
-            if(!localStorage.getItem('gas_api_url')) { localStorage.setItem('gas_api_url', DEFAULT_API_URL); API_URL = DEFAULT_API_URL; }
-            const url = localStorage.getItem('my_csv_url') || DEFAULT_CSV_URL;
-            Papa.parse(url, {
+            // Load Small Pay Data (Shared)
+            loadSmallPayCsv(DEFAULT_SMALL_PAY_CSV_URL);
+            
+            // Load Credit Card Data (Shared)
+            Papa.parse(DEFAULT_CSV_URL, {
                 download: true, header: true, skipEmptyLines: true,
-                complete: (results) => { if (results.data?.length > 0) { allCardsData = processRawData(results.data); initDropdowns(); renderView(); if(API_URL) syncWithCloud(); } else fallbackToDefault(); },
-                error: () => fallbackToDefault()
+                complete: (results) => { allCardsData = processRawData(results.data); initDropdowns(); renderView(); },
+                error: () => { allCardsData = []; initDropdowns(); renderView(); }
             });
+
+            // UI Init
             document.getElementById('txDate').valueAsDate = new Date();
-            document.getElementById('gasUrl').value = API_URL;
             initCategoryDropdown();
             initCityDropdown();
-            
-            const smallPayUrl = localStorage.getItem('small_pay_csv_url') || DEFAULT_SMALL_PAY_CSV_URL;
-            loadSmallPayCsv(smallPayUrl);
+            updateUserUI();
+
+            if (currentUser) {
+                API_URL = USER_CONFIGS[currentUser];
+                loadUserData();
+            } else {
+                // No user selected yet
+                API_URL = "";
+                transactions = [];
+                cardSettings = {};
+                renderView();
+            }
             
             switchTab('manage');
         }
 
-        // --- GLOBAL FUNCTIONS FOR UI ---
+        function loadUserData() {
+            if (!currentUser) return;
+            
+            // Load from LocalStorage
+            cardSettings = JSON.parse(localStorage.getItem(getStorageKey('card_settings')) || '{}');
+            transactions = JSON.parse(localStorage.getItem(getStorageKey('transactions')) || '[]');
+            
+            document.getElementById('gasUrl').value = API_URL;
+            
+            // Attempt Cloud Sync
+            syncWithCloud();
+        }
+
+        function switchUser(user) {
+            currentUser = user;
+            localStorage.setItem('cc_current_user', user);
+            API_URL = USER_CONFIGS[user];
+            
+            updateUserUI();
+            
+            // Clear current view data
+            transactions = [];
+            cardSettings = {};
+            
+            loadUserData(); // Load new user data
+            
+            showToast(`👋 歡迎 ${user}`);
+            document.getElementById('cloudModal').classList.add('hidden');
+        }
+
+        function updateUserUI() {
+            const btnLynn = document.getElementById('btnUserLynn');
+            const btnAndy = document.getElementById('btnUserAndy');
+            const badge = document.getElementById('userBadge');
+            
+            // Reset styles
+            const activeStyle = "bg-indigo-500 text-white shadow-md border-indigo-500";
+            const inactiveStyle = "bg-white text-slate-500 border-slate-200 hover:bg-slate-50";
+
+            if (currentUser === 'Lynn') {
+                btnLynn.className = `flex-1 py-3 text-sm font-bold rounded-xl border flex flex-col items-center gap-1 transition-all ${activeStyle}`;
+                btnAndy.className = `flex-1 py-3 text-sm font-bold rounded-xl border flex flex-col items-center gap-1 transition-all ${inactiveStyle}`;
+                badge.innerText = "🐱 Lynn";
+                badge.classList.remove('hidden');
+            } else if (currentUser === 'Andy') {
+                btnAndy.className = `flex-1 py-3 text-sm font-bold rounded-xl border flex flex-col items-center gap-1 transition-all ${activeStyle}`;
+                btnLynn.className = `flex-1 py-3 text-sm font-bold rounded-xl border flex flex-col items-center gap-1 transition-all ${inactiveStyle}`;
+                badge.innerText = "🦁 Andy";
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        // --- CORE FUNCTIONS ---
         window.initCategoryDropdown = function() { const s = document.getElementById('txCategory'); s.innerHTML=''; TX_CATEGORIES.forEach(c => { const o = document.createElement('option'); o.value=c; o.text=c; s.appendChild(o); }); }
         window.initCityDropdown = function() { const s = document.getElementById('smallPayCitySelect'); s.innerHTML='<option value="">🏙️ 依縣市查詢店家</option>'; TAIWAN_CITIES.forEach(c => { const o = document.createElement('option'); o.value=c; o.text=c; s.appendChild(o); }); }
-        window.fallbackToDefault = function() { allCardsData = processRawData(preloadedData); initDropdowns(); renderView(); }
+        
         window.processRawData = function(data) { 
             const map = new Map(); uniqueBanks = []; 
             data.forEach(row => { 
@@ -289,33 +396,65 @@
                 if(!bank || !name) return;
                 const id = `${bank}-${name}`;
                 if(!uniqueBanks.includes(bank)) uniqueBanks.push(bank);
-                if(!map.has(id)) map.set(id, { id, bank, name, color: getBankColor(bank), offers: [], defaultMin: 0 });
+                if(!map.has(id)) map.set(id, { id, bank, name, color: getBankColor(bank), offers: [], defaultMin: 0, defaultCap: 0 });
                 const obj = map.get(id);
-                const min = get(['低消', '門檻', 'min', 'low']);
+                
+                const min = get(['低消', '門檻', 'min', 'low', '回饋低消']);
                 if(min) { const n = parseFloat(String(min).replace(/[^\d.]/g, '')); if(!isNaN(n) && n > 0) obj.defaultMin = n; }
+
+                const capRow = get(['刷卡上限', 'cap', 'limit', '上限']);
+                if(capRow) { const n = parseFloat(String(capRow).replace(/[^\d.]/g, '')); if(!isNaN(n) && n > 0) obj.defaultCap = n; }
+
                 const cat = get(['類別', 'category']);
                 if(cat) obj.offers.push({ category: cat, rate: parseFloat(String(get(['回饋', 'rate'])).replace('%',''))||0, desc: get(['說明', 'desc']), tags: String(get(['關鍵字', 'tags'])).split(/[,，、]/).filter(Boolean), baseRate: get(['基礎', 'baseRate']), cap: get(['上限', 'cap']) });
             });
             return Array.from(map.values());
         }
+
         window.getBankColor = function(b) { if(b.includes("台新")) return "bg-gradient-to-r from-red-400 to-red-500"; if(b.includes("玉山")) return "bg-gradient-to-r from-emerald-400 to-emerald-500"; if(b.includes("富邦")) return "bg-gradient-to-r from-cyan-500 to-blue-500"; if(b.includes("國泰") || b.includes("CUBE")) return "bg-gradient-to-r from-lime-500 to-green-500"; return "bg-gradient-to-r from-gray-400 to-gray-500"; }
+        
         window.initDropdowns = function() { 
             const b = document.getElementById('bankSelect'); b.innerHTML='<option value="">所有銀行</option>'; uniqueBanks.forEach(x => { const o = document.createElement('option'); o.value=x; o.text=x; b.appendChild(o); });
             const m = document.getElementById('manageCardFilter'); m.innerHTML='<option value="">💳 所有信用卡</option>'; allCardsData.forEach(c => { const o = document.createElement('option'); o.value=c.id; o.text=c.name; m.appendChild(o); });
         }
+        
         window.getCardDefaultCap = function(id) { const c = allCardsData.find(x => x.id === id); if(c && c.offers.length > 0) for(let o of c.offers) { if(o.cap && !o.cap.includes("無")) { const n = parseFloat(o.cap.replace(/[^\d.]/g, '')); if(!isNaN(n) && n > 0) return n; } } return 0; }
         
-        window.saveCloudSettings = async function() { const u = document.getElementById('gasUrl').value.trim(); if(u) { localStorage.setItem('gas_api_url', u); API_URL = u; document.getElementById('cloudModal').classList.add('hidden'); await syncWithCloud(); } }
-        window.syncWithCloud = async function() { if(!API_URL) return; showLoading(true, "雲端同步中..."); try { const r = await fetch(API_URL + '?action=read'); const j = await r.json(); if(j.status === 'success' && j.data) { transactions = j.data; localStorage.setItem('cc_transactions_v2', JSON.stringify(transactions)); renderView(); showToast('同步完成'); } } catch(e) {} finally { showLoading(false); } }
-        window.postToCloud = async function(tx, action='save') { if(!API_URL) return; try { await fetch(API_URL + `?action=${action}${action==='delete'?'&id='+tx.id:''}`, { method: 'POST', body: JSON.stringify(tx) }); } catch(e) {} }
-        
-        window.showLoading = function(show, text = "雲端同步中...") { 
-            const overlay = document.getElementById('loadingOverlay');
-            document.getElementById('loadingText').innerText = text;
-            overlay.classList.toggle('hidden', !show); 
+        // --- CLOUD SYNC (USER SPECIFIC) ---
+        window.saveCloudSettings = async function() { 
+            document.getElementById('cloudModal').classList.add('hidden'); 
+            syncWithCloud();
         }
+
+        window.syncWithCloud = async function() { 
+            if(!API_URL) return; 
+            
+            showLoading(true, "雲端同步中..."); 
+            try { 
+                const r = await fetch(API_URL + '?action=read'); 
+                const j = await r.json(); 
+                if(j.status === 'success' && j.data) { 
+                    transactions = j.data; 
+                    localStorage.setItem(getStorageKey('transactions'), JSON.stringify(transactions)); 
+                    renderView(); 
+                    showToast('同步完成'); 
+                } 
+            } catch(e) {
+                showToast('同步失敗');
+            } finally { 
+                showLoading(false); 
+            } 
+        }
+
+        window.postToCloud = async function(tx, action='save') { 
+            if(!API_URL) return; 
+            try { await fetch(API_URL + `?action=${action}${action==='delete'?'&id='+tx.id:''}`, { method: 'POST', body: JSON.stringify(tx) }); } catch(e) {} 
+        }
+        
+        window.showLoading = function(show, text = "雲端同步中...") { document.getElementById('loadingText').innerText=text; document.getElementById('loadingOverlay').classList.toggle('hidden', !show); }
         window.showToast = function(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.classList.remove('opacity-0', 'pointer-events-none'); setTimeout(() => t.classList.add('opacity-0', 'pointer-events-none'), 2000); }
 
+        // --- TAB & UI LOGIC ---
         window.switchTab = function(view) {
             currentView = view;
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -356,6 +495,7 @@
             checkScroll();
         }
 
+        // --- SEARCH VIEW ---
         window.renderSearchView = function(container) {
             const searchText = document.getElementById('searchInput').value.toLowerCase().trim();
             const filtered = allCardsData.filter(c => (!currentBankFilter || c.bank === currentBankFilter) && (!currentCardFilter || c.name === currentCardFilter)).map(card => {
@@ -403,7 +543,15 @@
             });
         }
 
+        // --- MANAGE VIEW ---
         window.renderManageView = function(container) {
+            if(!currentUser) {
+                container.innerHTML = `<div class="text-center py-20 opacity-60"><div class="bg-white/50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm backdrop-blur-sm"><i data-lucide="user-circle" class="w-10 h-10 text-indigo-200"></i></div><p class="text-indigo-400 font-bold text-sm tracking-widest mb-4">請先選擇您的身分</p><button onclick="document.getElementById('cloudModal').classList.remove('hidden')" class="bg-indigo-500 text-white px-6 py-3 rounded-xl font-bold shadow-lg">前往設定</button></div>`;
+                document.getElementById('totalSpendDisplay').innerText = `本期 $0`;
+                document.getElementById('fabContainer').style.display = 'none';
+                return;
+            }
+
             const today = new Date();
             let totalMonthlySpend = 0;
             let cardsToRender = allCardsData;
@@ -411,7 +559,6 @@
 
             let cardsWithStats = cardsToRender.map(card => {
                 const settings = cardSettings[card.id] || { cycleType: 'month', billDay: 1, customCap: 0, customMin: 0 };
-                if(!settings.customCap) { const def = getCardDefaultCap(card.id); if(def > 0) settings.customCap = def; }
                 const cycle = getCycleRange(settings, today);
                 const cycleTxs = transactions.filter(t => t.cardId === card.id && t.date >= cycle.start && t.date <= cycle.end);
                 const rewardSpent = cycleTxs.filter(t => t.types.includes('reward')).reduce((sum, t) => sum + parseFloat(t.amount), 0);
@@ -435,8 +582,9 @@
             else document.getElementById('noResult').classList.add('hidden');
 
             cardsWithStats.forEach(card => {
-                const cap = parseFloat(card.settings.customCap) || 0;
+                const cap = parseFloat(card.settings.customCap) || card.defaultCap || getCardDefaultCap(card.id) || 0;
                 const min = parseFloat(card.settings.customMin) || card.defaultMin || 0;
+                
                 const capPercent = cap > 0 ? Math.min((card.rewardSpent / cap) * 100, 100) : 0;
                 const remaining = cap > 0 ? (cap - card.rewardSpent) : null;
                 const minPercent = min > 0 ? Math.min((card.generalSpent / min) * 100, 100) : 0;
@@ -670,12 +818,20 @@
         function checkScroll() { const btn = document.getElementById('btnBackToTop'); if(window.scrollY > 200) btn.classList.add('show'); else btn.classList.remove('show'); }
         window.addEventListener('scroll', checkScroll);
         function getCycleRange(settings, refDate) { const year = refDate.getFullYear(), month = refDate.getMonth(), day = refDate.getDate(); let start, end; if (settings.cycleType === 'month') { start = new Date(year, month, 1); end = new Date(year, month + 1, 0); } else { const billDay = parseInt(settings.billDay) || 1; if (day > billDay) { start = new Date(year, month, billDay + 1); end = new Date(year, month + 1, billDay); } else { start = new Date(year, month - 1, billDay + 1); end = new Date(year, month, billDay); } } return { start: start.toISOString().split('T')[0], end: end.toISOString().split('T')[0] }; }
-        
-        // --- RESTORED TRANSACTION FUNCTIONS ---
+
+        // --- TRANSACTION FUNCTIONS ---
         window.openTransactionModal = function(existingTxId = null) {
             const select = document.getElementById('txCardSelect'); select.innerHTML = '';
             let sortedCards = [...allCardsData];
             if(manageCardFilter) { sortedCards.sort((a,b) => (a.id === manageCardFilter ? -1 : 1)); }
+            
+            // Add a placeholder option
+            const defaultOpt = document.createElement('option');
+            defaultOpt.value = "";
+            defaultOpt.text = "請選擇卡片";
+            defaultOpt.disabled = true;
+            defaultOpt.selected = true;
+            select.appendChild(defaultOpt);
 
             sortedCards.forEach(c => { const opt = document.createElement('option'); opt.value = c.id; opt.text = `${c.bank} - ${c.name}`; select.appendChild(opt); });
             
@@ -690,15 +846,8 @@
                     document.getElementById('txCardSelect').value = tx.cardId;
                     document.getElementById('txAmount').value = tx.amount;
                     document.getElementById('txDate').value = tx.date;
-                    
-                    if(tx.category) {
-                         document.getElementById('txCategory').value = tx.category;
-                         document.getElementById('txItem').value = tx.item || '';
-                    } else {
-                        document.getElementById('txCategory').value = "📦 其他";
-                        document.getElementById('txItem').value = tx.item || '';
-                    }
-
+                    document.getElementById('txCategory').value = tx.category || '🍽️ 餐飲';
+                    document.getElementById('txItem').value = tx.item || '';
                     document.getElementById('txNote').value = tx.note || '';
                     document.getElementById('checkReward').checked = tx.types.includes('reward');
                     document.getElementById('checkGeneral').checked = tx.types.includes('general');
@@ -728,6 +877,8 @@
         window.closeTransactionModal = function() { document.getElementById('transactionModal').classList.add('hidden'); }
         
         window.saveTransaction = async function() {
+            if (!currentUser) return alert('請先選擇使用者身分 (設定 > 選擇身分)');
+            
             const cardId = document.getElementById('txCardSelect').value;
             const amount = parseFloat(document.getElementById('txAmount').value);
             const date = document.getElementById('txDate').value;
@@ -738,7 +889,17 @@
             if(document.getElementById('checkReward').checked) types.push('reward');
             if(document.getElementById('checkGeneral').checked) types.push('general');
 
-            if (!cardId || !amount || !date || !category) return alert("請填寫金額、日期與類別");
+            // --- VALIDATION LOGIC ---
+            const missing = [];
+            if (!cardId) missing.push("信用卡");
+            if (isNaN(amount) || amount <= 0) missing.push("金額");
+            if (!date) missing.push("日期");
+            if (!category) missing.push("類別");
+
+            if (missing.length > 0) {
+                alert(`請記得填寫以下欄位喔：\n${missing.join('、')}`);
+                return;
+            }
             
             showLoading(true, "雲端同步中...");
             await new Promise(r => setTimeout(r, 50));
@@ -756,7 +917,7 @@
                 transactions.push(txData);
             }
 
-            localStorage.setItem('cc_transactions_v2', JSON.stringify(transactions));
+            localStorage.setItem(getStorageKey('transactions'), JSON.stringify(transactions));
             await postToCloud(txData, 'save'); 
             
             showLoading(false); 
@@ -766,17 +927,15 @@
             if(!document.getElementById('historyModal').classList.contains('hidden')) window.openHistoryModal();
         }
 
-        // --- RESTORED DELETE & HISTORY & SETTINGS ---
-        window.openDeleteConfirm = function() {
-            document.getElementById('deleteConfirmModal').classList.remove('hidden');
-        }
-
+        window.openDeleteConfirm = function() { document.getElementById('deleteConfirmModal').classList.remove('hidden'); }
+        
         window.executeDelete = async function() {
+            if (!currentUser) return;
             document.getElementById('deleteConfirmModal').classList.add('hidden'); 
             showLoading(true, "雲端刪除中...");
             
             transactions = transactions.filter(t => t.id !== editingTransactionId);
-            localStorage.setItem('cc_transactions_v2', JSON.stringify(transactions));
+            localStorage.setItem(getStorageKey('transactions'), JSON.stringify(transactions));
             
             await postToCloud({id: editingTransactionId}, 'delete'); 
             
@@ -786,80 +945,7 @@
             renderView();
             if(!document.getElementById('historyModal').classList.contains('hidden')) window.openHistoryModal();
         }
-
-        window.openHistoryModal = function() {
-            const list = document.getElementById('historyListContainer');
-            list.innerHTML = '';
-            document.getElementById('historyModal').classList.remove('hidden');
-            const sortedTx = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
-            document.getElementById('historyTotalDisplay').innerText = `總計 $${sortedTx.reduce((s,t)=>s+parseFloat(t.amount),0).toLocaleString()}`;
-            if(sortedTx.length === 0) { list.innerHTML = `<div class="text-center text-slate-300 py-20 font-bold">尚無紀錄</div>`; return; }
-            const groups = {};
-            sortedTx.forEach(tx => { const month = tx.date.substring(0, 7); if (!groups[month]) groups[month] = []; groups[month].push(tx); });
-            Object.keys(groups).sort().reverse().forEach(month => {
-                const monthDiv = document.createElement('div');
-                monthDiv.className = "mb-6";
-                monthDiv.innerHTML = `<div class="text-lg font-bold text-slate-800 serif-font mb-3 pl-1 border-l-4 border-indigo-400 flex items-center gap-2">${month.split('-')[0]}年 <span class="text-indigo-600">${month.split('-')[1]}月</span></div>`;
-                groups[month].forEach(tx => {
-                    const card = allCardsData.find(c => c.id === tx.cardId) || { name: '未知卡片' };
-                    let badges = '';
-                    if(tx.types.includes('reward')) badges += '<span class="text-[9px] bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded font-bold">回饋</span>';
-                    if(tx.types.includes('general')) badges += '<span class="text-[9px] bg-orange-50 text-orange-500 px-1.5 py-0.5 rounded font-bold">低消</span>';
-                    const item = document.createElement('div');
-                    item.className = "flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-slate-100 mb-2 tx-row";
-                    item.onclick = function() { window.openTransactionModal(tx.id); };
-                    
-                    const catStr = tx.category ? `<span class="mr-1">${tx.category.split(' ')[0]}</span>` : '';
-                    const itemStr = tx.item || tx.note || '消費';
-
-                    item.innerHTML = `<div class="flex items-center gap-3"><div class="text-xs font-bold text-slate-400 font-mono w-8 text-center">${tx.date.slice(8,10)}日</div><div><div class="text-xs text-slate-600 font-medium">${card.name}</div><div class="font-bold text-slate-700 text-sm">${catStr}${itemStr}</div></div></div><div class="text-right"><div class="font-bold text-slate-700 font-mono">$${parseFloat(tx.amount).toLocaleString()}</div><div class="flex gap-1 justify-end mt-1">${badges}</div></div>`;
-                    monthDiv.appendChild(item);
-                });
-                list.appendChild(monthDiv);
-            });
-        }
-
-        window.closeHistoryModal = function() { document.getElementById('historyModal').classList.add('hidden'); renderView(); }
-        window.openSettingsModal = function(cardId, name) {
-            editingCardId = cardId;
-            const s = cardSettings[cardId] || { cycleType: 'month', billDay: 1, customCap: '', customMin: '' };
-            let displayCap = s.customCap;
-            if(!displayCap) { const def = getCardDefaultCap(cardId); if(def > 0) displayCap = def; }
-            document.getElementById('settingCardTitle').innerText = name;
-            document.getElementById('settingCap').value = displayCap || '';
-            document.getElementById('settingMin').value = s.customMin || '';
-            setCycleMode(s.cycleType || 'month');
-            document.getElementById('settingBillDay').value = s.billDay || 1;
-            document.getElementById('settingsModal').classList.remove('hidden');
-        }
-        window.closeSettingsModal = function() { document.getElementById('settingsModal').classList.add('hidden'); editingCardId = null; }
-        window.setCycleMode = function(mode) {
-            const btnMonth = document.getElementById('btnCycleMonth');
-            const btnBill = document.getElementById('btnCycleBill');
-            const inputGroup = document.getElementById('billDateInputGroup');
-            if (mode === 'month') {
-                btnMonth.className = "flex-1 py-2 text-xs font-bold rounded-lg border bg-indigo-500 text-white border-transparent shadow-md";
-                btnBill.className = "flex-1 py-2 text-xs font-bold rounded-lg border border-slate-200 text-slate-500 bg-white";
-                inputGroup.classList.add('hidden');
-            } else {
-                btnBill.className = "flex-1 py-2 text-xs font-bold rounded-lg border bg-indigo-500 text-white border-transparent shadow-md";
-                btnMonth.className = "flex-1 py-2 text-xs font-bold rounded-lg border border-slate-200 text-slate-500 bg-white";
-                inputGroup.classList.remove('hidden');
-            }
-            document.getElementById('settingsModal').dataset.mode = mode;
-        }
-        window.saveCardSettings = function() {
-            if (!editingCardId) return;
-            const mode = document.getElementById('settingsModal').dataset.mode;
-            const billDay = parseInt(document.getElementById('settingBillDay').value);
-            const cap = document.getElementById('settingCap').value;
-            const min = document.getElementById('settingMin').value;
-            cardSettings[editingCardId] = { cycleType: mode, billDay, customCap: cap, customMin: min };
-            localStorage.setItem('cc_card_settings', JSON.stringify(cardSettings));
-            closeSettingsModal();
-            renderView();
-        }
-
+        
         document.getElementById('bankSelect').addEventListener('change', (e) => { currentBankFilter = e.target.value; currentCardFilter = ''; const s=document.getElementById('cardSelect'); s.innerHTML='<option value="">所有卡片</option>'; if(currentBankFilter) { allCardsData.filter(c=>c.bank===currentBankFilter).forEach(c=>{const o=document.createElement('option');o.value=c.name;o.text=c.name;s.appendChild(o)});s.disabled=false;}else s.disabled=true; renderView(); });
         document.getElementById('cardSelect').addEventListener('change', (e) => { currentCardFilter = e.target.value; renderView(); });
         document.getElementById('manageCardFilter').addEventListener('change', (e) => { manageCardFilter = e.target.value; renderView(); });
