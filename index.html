@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>毛爸毛媽的信用卡權益</title>
+    <title>毛爸毛媽的信用卡權益 V67</title>
     
     <!-- PWA Settings -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -70,40 +70,28 @@
         .suggestion-item:last-child { border-bottom: none; }
         .suggestion-item:hover { background-color: #F8FAFC; color: #6366F1; font-weight: bold; }
         
-        /* PIN Input Styles */
         .pin-dot { width: 12px; height: 12px; border-radius: 50%; background-color: #CBD5E0; margin: 0 4px; transition: background-color 0.2s; }
         .pin-dot.active { background-color: #6366F1; }
     </style>
 </head>
 <body class="pb-24 text-slate-700">
 
-    <!-- Login Screen (Overlay) -->
+    <!-- Login Screen -->
     <div id="loginScreen" class="fixed inset-0 z-[100] bg-gradient-to-br from-indigo-50 to-pink-50 flex flex-col items-center justify-center p-6 transition-all duration-500">
         <div class="bg-white/80 backdrop-blur-xl p-8 rounded-[2rem] shadow-xl w-full max-w-xs text-center border border-white/50">
             <h1 class="text-2xl font-bold text-slate-800 mb-2 serif-font">歡迎回來</h1>
-            <p class="text-xs text-slate-400 mb-8">請選擇身分以解鎖 (預設密碼 0515)</p>
-            
-            <!-- User Selection -->
+            <p class="text-xs text-slate-400 mb-8">請選擇身分以解鎖</p>
             <div id="userSelectArea" class="grid grid-cols-2 gap-4 mb-6">
                 <button onclick="promptPin('Lynn')" class="flex flex-col items-center gap-3 p-4 rounded-2xl border-2 border-transparent bg-white shadow-sm hover:border-pink-300 transition-all hover:-translate-y-1 active:scale-95 group">
-                    <div class="w-16 h-16 rounded-full bg-pink-100 flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition-transform">🐱</div>
-                    <span class="font-bold text-slate-600">Lynn</span>
+                    <div class="w-16 h-16 rounded-full bg-pink-100 flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition-transform">🐱</div><span class="font-bold text-slate-600">Lynn</span>
                 </button>
                 <button onclick="promptPin('Andy')" class="flex flex-col items-center gap-3 p-4 rounded-2xl border-2 border-transparent bg-white shadow-sm hover:border-blue-300 transition-all hover:-translate-y-1 active:scale-95 group">
-                    <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition-transform">🦁</div>
-                    <span class="font-bold text-slate-600">Andy</span>
+                    <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition-transform">🦁</div><span class="font-bold text-slate-600">Andy</span>
                 </button>
             </div>
-
-            <!-- PIN Input Area -->
             <div id="pinArea" class="hidden">
-                <div class="flex items-center justify-center gap-2 mb-6">
-                    <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-2xl shadow-sm" id="pinUserIcon"></div>
-                    <span class="font-bold text-lg text-slate-700" id="pinUserName"></span>
-                </div>
-                <div class="flex justify-center mb-6" id="pinDots">
-                    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
-                </div>
+                <div class="flex items-center justify-center gap-2 mb-6"><div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-2xl shadow-sm" id="pinUserIcon"></div><span class="font-bold text-lg text-slate-700" id="pinUserName"></span></div>
+                <div class="flex justify-center mb-6" id="pinDots"><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div></div>
                 <div class="grid grid-cols-3 gap-3 mb-4">
                     <button onclick="addPin(1)" class="py-3 rounded-2xl bg-slate-50 font-bold text-lg shadow-sm hover:bg-white active:bg-indigo-50">1</button>
                     <button onclick="addPin(2)" class="py-3 rounded-2xl bg-slate-50 font-bold text-lg shadow-sm hover:bg-white active:bg-indigo-50">2</button>
@@ -122,7 +110,7 @@
         </div>
     </div>
 
-    <!-- Main App Content -->
+    <!-- Main App -->
     <div id="appContainer" class="hidden opacity-0 transition-opacity duration-500">
         <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg z-[80] transition-opacity duration-300 opacity-0 pointer-events-none">✅ 已更新</div>
         <div id="loadingOverlay" class="fixed inset-0 loading-overlay hidden flex flex-col items-center justify-center">
@@ -134,7 +122,6 @@
             <div class="max-w-md mx-auto px-5 py-4">
                 <div class="flex justify-between items-center mb-2">
                     <div class="flex items-center gap-2">
-                        <!-- Dynamic User Title -->
                         <h1 class="text-indigo-600 text-xl font-bold flex items-center gap-2 tracking-wide" onclick="window.scrollTo({top:0, behavior:'smooth'})"><i data-lucide="paw-print" class="w-5 h-5 text-pink-500"></i> <span id="appTitle">毛爸毛媽的信用卡權益</span></h1>
                         <span id="userBadge" class="text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-500 font-bold hidden shadow-sm border border-slate-200"></span>
                     </div>
@@ -178,7 +165,7 @@
         </div>
     </div> <!-- End App Container -->
 
-    <!-- Modals (AI, Settings, etc.) -->
+    <!-- Modals -->
     <div id="aiChatModal" class="fixed inset-0 bg-slate-900/60 z-[70] hidden flex flex-col justify-end sm:justify-center backdrop-blur-sm">
         <div class="bg-white w-full sm:max-w-sm sm:mx-auto sm:rounded-3xl rounded-t-3xl h-[80vh] sm:h-[600px] flex flex-col shadow-2xl animate-in slide-in-from-bottom-10">
             <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-gradient-to-r from-pink-500 to-rose-500 text-white sm:rounded-t-3xl rounded-t-3xl"><div class="flex items-center gap-2"><i data-lucide="bot" class="w-6 h-6"></i><h3 class="font-bold">AI 智能客服</h3></div><button onclick="document.getElementById('aiChatModal').classList.add('hidden')" class="p-1 hover:bg-white/20 rounded-full transition"><i data-lucide="x" class="w-5 h-5"></i></button></div>
@@ -187,28 +174,21 @@
         </div>
     </div>
 
-    <!-- Settings & Cloud Modal (Multi-User) -->
     <div id="cloudModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in text-center">
-            <h3 class="font-bold text-lg mb-2 text-slate-800 serif-font">設定</h3>
-            <p class="text-xs text-slate-400 mb-6">目前使用者: <span id="settingsCurrentUser" class="font-bold text-indigo-500"></span></p>
-            
-            <button onclick="logout()" class="w-full py-3 rounded-xl border border-slate-200 text-slate-500 font-bold text-sm hover:bg-slate-50 mb-4 flex items-center justify-center gap-2">
-                <i data-lucide="log-out" class="w-4 h-4"></i> 登出 / 切換使用者
-            </button>
-
-            <div class="border-t border-slate-100 pt-4 space-y-3 text-left">
-                 <div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">記帳同步資料庫 (GAS)</label><input type="text" id="gasUrl" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 outline-none" placeholder="https://script.google.com/..." readonly><p class="text-[9px] text-slate-300 mt-1">* 系統自動帶入</p></div>
+            <h3 class="font-bold text-lg mb-4 text-slate-800 serif-font text-center">使用者設定</h3>
+            <div class="bg-indigo-50 p-4 rounded-xl mb-5 border border-indigo-100">
+                <label class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-3 block text-center">選擇您的身分</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="btnUserLynn" onclick="switchUser('Lynn')" class="py-3 text-sm font-bold rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-pink-50 transition-all flex flex-col items-center gap-1 shadow-sm"><span class="text-2xl mb-1">🐱</span> Lynn</button>
+                    <button id="btnUserAndy" onclick="switchUser('Andy')" class="py-3 text-sm font-bold rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-blue-50 transition-all flex flex-col items-center gap-1 shadow-sm"><span class="text-2xl mb-1">🦁</span> Andy</button>
+                </div>
             </div>
-            
-            <div class="flex gap-2 mt-6">
-                <button onclick="document.getElementById('cloudModal').classList.add('hidden')" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">關閉</button>
-                <button onclick="syncWithCloud()" class="flex-1 py-3 rounded-xl bg-indigo-600 text-white font-bold shadow-md text-sm">立即同步</button>
-            </div>
+            <div class="space-y-3"><div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">記帳同步資料庫 (GAS)</label><input type="text" id="gasUrl" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 outline-none" placeholder="https://script.google.com/..." readonly><p class="text-[9px] text-slate-300 mt-1">* 系統自動帶入，無需修改</p></div></div>
+            <div class="flex gap-2 mt-6"><button onclick="document.getElementById('cloudModal').classList.add('hidden')" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">關閉</button><button onclick="syncWithCloud()" class="flex-1 py-3 rounded-xl bg-indigo-600 text-white font-bold shadow-md text-sm">立即同步</button></div>
         </div>
     </div>
 
-    <!-- Other Modals -->
     <div id="smallPayDbModal" class="fixed inset-0 bg-slate-900/60 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in"><h3 class="font-bold text-lg mb-1 text-slate-800 serif-font">匯入小額支付完整名單</h3><p class="text-xs text-slate-400 mb-4">貼上 CSV 網址</p><input type="text" id="smallPayCsvUrl" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 outline-none mb-2" placeholder="https://docs.google.com/..."><div class="flex gap-2"><button onclick="document.getElementById('smallPayDbModal').classList.add('hidden')" class="flex-1 py-2 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">取消</button><button onclick="saveSmallPayDb()" class="flex-1 py-2 rounded-xl bg-indigo-600 text-white font-bold shadow-md text-sm">匯入</button></div></div></div>
     <div id="deleteConfirmModal" class="fixed inset-0 bg-slate-900/60 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in transform transition-all scale-100"><div class="flex flex-col items-center text-center mb-4"><div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-3"><i data-lucide="trash-2" class="w-6 h-6 text-red-500"></i></div><h3 class="font-bold text-lg text-slate-800">確定要刪除嗎？</h3><p class="text-xs text-slate-500 mt-1">刪除後將無法復原。</p></div><div class="flex gap-3"><button onclick="document.getElementById('deleteConfirmModal').classList.add('hidden')" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold text-sm">取消</button><button onclick="executeDelete()" class="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold shadow-md text-sm">確認刪除</button></div></div></div>
     
@@ -230,7 +210,7 @@
 
     <!-- History & Settings Modals -->
     <div id="historyModal" class="fixed inset-0 bg-slate-50 z-50 hidden flex flex-col"><div class="bg-white border-b border-slate-100 p-4 pt-safe-top flex justify-between items-center shadow-sm z-10 sticky top-0"><div class="flex items-center gap-2"><button onclick="closeHistoryModal()" class="p-2 -ml-2 text-slate-400 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-6 h-6"></i></button><h2 class="text-lg font-bold text-slate-800 serif-font">歷史帳本</h2></div><div class="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full" id="historyTotalDisplay">$0</div></div><div class="flex-1 overflow-y-auto p-4 space-y-3" id="historyListContainer"></div></div>
-    <div id="settingsModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in"><h3 class="font-bold text-lg mb-1 text-slate-800 serif-font" id="settingCardTitle">卡片設定</h3><div class="space-y-4 mt-4"><div><label class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1.5 block">最佳回饋上限</label><div class="input-box-fixed"><span class="text-indigo-400 font-bold mr-2">$</span><input type="number" id="settingCap" class="flex-1 bg-transparent outline-none text-slate-700 font-bold text-lg h-6" placeholder="無上限"></div></div><div><label class="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-1.5 block">低消門檻</label><div class="input-box-fixed"><span class="text-orange-400 font-bold mr-2">$</span><input type="number" id="settingMin" class="flex-1 bg-transparent outline-none text-slate-700 font-bold text-lg h-6" placeholder="0"></div></div><div class="bg-slate-50 p-4 rounded-2xl border border-slate-100"><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block">計算週期</label><div class="flex gap-2 mb-3"><button type="button" onclick="setCycleMode('month')" id="btnCycleMonth" class="flex-1 py-2 text-xs font-bold rounded-lg border">日曆月</button><button type="button" onclick="setCycleMode('bill')" id="btnCycleBill" class="flex-1 py-2 text-xs font-bold rounded-lg border">結帳日</button></div><div id="billDateInputGroup" class="hidden flex items-center gap-2 justify-center"><span class="text-xs text-slate-500 font-bold">每月</span><input type="number" id="settingBillDay" min="1" max="31" class="w-14 text-center bg-white rounded-lg border border-slate-200 outline-none text-sm font-bold text-indigo-600 py-1.5" value="1"><span class="text-xs text-slate-500 font-bold">日 結帳</span></div></div></div><div class="flex gap-3 mt-6"><button onclick="closeSettingsModal()" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">取消</button><button onclick="saveCardSettings()" class="flex-1 py-3 rounded-xl bg-indigo-600 text-white font-bold shadow-md text-sm">確認</button></div></div></div>
+    <div id="settingsModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in"><h3 class="font-bold text-lg mb-1 text-slate-800 serif-font">卡片設定</h3><div class="space-y-4 mt-4"><div><label class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1.5 block">最佳回饋上限</label><div class="input-box-fixed"><span class="text-indigo-400 font-bold mr-2">$</span><input type="number" id="settingCap" class="flex-1 bg-transparent outline-none text-slate-700 font-bold text-lg h-6" placeholder="無上限"></div></div><div><label class="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-1.5 block">低消門檻</label><div class="input-box-fixed"><span class="text-orange-400 font-bold mr-2">$</span><input type="number" id="settingMin" class="flex-1 bg-transparent outline-none text-slate-700 font-bold text-lg h-6" placeholder="0"></div></div><div class="bg-slate-50 p-4 rounded-2xl border border-slate-100"><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block">計算週期</label><div class="flex gap-2 mb-3"><button type="button" onclick="setCycleMode('month')" id="btnCycleMonth" class="flex-1 py-2 text-xs font-bold rounded-lg border">日曆月</button><button type="button" onclick="setCycleMode('bill')" id="btnCycleBill" class="flex-1 py-2 text-xs font-bold rounded-lg border">結帳日</button></div><div id="billDateInputGroup" class="hidden flex items-center gap-2 justify-center"><span class="text-xs text-slate-500 font-bold">每月</span><input type="number" id="settingBillDay" min="1" max="31" class="w-14 text-center bg-white rounded-lg border border-slate-200 outline-none text-sm font-bold text-indigo-600 py-1.5" value="1"><span class="text-xs text-slate-500 font-bold">日 結帳</span></div></div></div><div class="flex gap-3 mt-6"><button onclick="closeSettingsModal()" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">取消</button><button onclick="saveCardSettings()" class="flex-1 py-3 rounded-xl bg-indigo-600 text-white font-bold shadow-md text-sm">確認</button></div></div></div>
 
     <script>
         // --- CONSTANTS ---
@@ -327,10 +307,8 @@
 
         window.checkPin = function() {
             if(tempPin === '0515') {
-                // Success
                 loginSuccess(pendingUser);
             } else {
-                // Fail animation
                 const pinArea = document.getElementById('pinArea');
                 pinArea.classList.add('animate-shake');
                 setTimeout(() => {
@@ -346,7 +324,6 @@
             localStorage.setItem('cc_current_user', user);
             API_URL = USER_CONFIGS[user];
             
-            // Hide Login, Show App
             document.getElementById('loginScreen').classList.add('opacity-0', 'pointer-events-none');
             setTimeout(() => {
                 document.getElementById('loginScreen').classList.add('hidden');
@@ -382,16 +359,13 @@
 
         function updateUserUI() {
             const badge = document.getElementById('userBadge');
-            const settingsUser = document.getElementById('settingsCurrentUser');
             
             if (currentUser === 'Lynn') {
                 badge.innerText = "🐱 Lynn";
                 badge.classList.remove('hidden');
-                settingsUser.innerText = "🐱 Lynn";
             } else if (currentUser === 'Andy') {
                 badge.innerText = "🦁 Andy";
                 badge.classList.remove('hidden');
-                settingsUser.innerText = "🦁 Andy";
             }
         }
 
@@ -407,17 +381,56 @@
                 if(!bank || !name) return;
                 const id = `${bank}-${name}`;
                 if(!uniqueBanks.includes(bank)) uniqueBanks.push(bank);
-                if(!map.has(id)) map.set(id, { id, bank, name, color: getBankColor(bank), offers: [], defaultMin: 0, defaultCap: 0 });
+                if(!map.has(id)) map.set(id, { id, bank, name, color: getBankColor(bank), offers: [], defaultMin: 0, defaultCap: 0, domesticBase: '', foreignBase: '' });
                 const obj = map.get(id);
                 
+                // Card Level Info
                 const min = get(['低消', '門檻', 'min', 'low', '回饋低消']);
                 if(min) { const n = parseFloat(String(min).replace(/[^\d.]/g, '')); if(!isNaN(n) && n > 0) obj.defaultMin = n; }
 
-                const capRow = get(['刷卡上限', 'cap', 'limit', '上限']);
+                // Updated: Prioritize '指定回饋上限' for the manage view budget bar
+                const capRow = get(['指定回饋上限', 'bonus_cap', '最佳刷卡上限', '刷卡上限', 'cap', 'limit', '上限']);
                 if(capRow) { const n = parseFloat(String(capRow).replace(/[^\d.]/g, '')); if(!isNaN(n) && n > 0) obj.defaultCap = n; }
 
+                const domBase = get(['國內基礎回饋', '國內基礎', 'domestic']);
+                if(domBase) obj.domesticBase = domBase;
+
+                const forBase = get(['國外基礎回饋', '國外基礎', 'foreign']);
+                if(forBase) obj.foreignBase = forBase;
+
+                const baseCap = get(['基礎回饋上限', 'base_cap']);
+                if (baseCap) obj.baseCap = baseCap;
+
                 const cat = get(['類別', 'category']);
-                if(cat) obj.offers.push({ category: cat, rate: parseFloat(String(get(['回饋', 'rate'])).replace('%',''))||0, desc: get(['說明', 'desc']), tags: String(get(['關鍵字', 'tags'])).split(/[,，、]/).filter(Boolean), baseRate: get(['基礎', 'baseRate']), cap: get(['上限', 'cap']) });
+                if(cat) {
+                    // Smart rate parser: take max value if range
+                    // Updated: Prioritize '最佳回饋' column
+                    let rawRate = String(get(['最佳回饋', '基礎+指定回饋', '最高回饋', 'max_total', '回饋', 'rate']) || '0');
+                    if(rawRate === '0') rawRate = String(get(['回饋', 'rate']) || '0'); // Fallback
+
+                    let rateVal = 0;
+                    if (rawRate.includes('-') || rawRate.includes('~')) {
+                         const parts = rawRate.split(/[-~]/).map(p => parseFloat(p.replace('%',''))).filter(n => !isNaN(n));
+                         rateVal = Math.max(...parts);
+                    } else {
+                         rateVal = parseFloat(rawRate.replace('%','')) || 0;
+                    }
+                    if(!rawRate.includes('%') && rateVal > 0) rawRate += '%';
+
+                    obj.offers.push({ 
+                        category: cat, 
+                        rate: rateVal, 
+                        rateStr: rawRate, 
+                        desc: get(['說明', '備註', 'desc', 'note']), 
+                        tags: String(get(['關鍵字', 'tags'])).split(/[,，、]/).filter(Boolean), 
+                        baseRate: get(['基礎', 'baseRate']), 
+                        cap: get(['上限', 'cap']),
+                        paymentMethod: get(['限定支付方式', '限定支付', 'payment']),
+                        bonusRate: get(['指定加碼回饋', 'bonus_rate']),
+                        bonusCap: get(['指定回饋上限', 'bonus_cap']),
+                        totalRate: get(['基礎+指定回饋', '基礎加指定', 'max_total'])
+                    });
+                }
             });
             return Array.from(map.values());
         }
@@ -499,10 +512,15 @@
             const searchText = document.getElementById('searchInput').value.toLowerCase().trim();
             const filtered = allCardsData.filter(c => (!currentBankFilter || c.bank === currentBankFilter) && (!currentCardFilter || c.name === currentCardFilter)).map(card => {
                 const matches = card.offers.filter(offer => {
+                    // Updated: Filter out zero rates
+                    if (offer.rate <= 0) return false;
+
                     if (!searchText) return true;
                     return offer.desc.toLowerCase().includes(searchText) || offer.category.toLowerCase().includes(searchText) || card.name.toLowerCase().includes(searchText) || offer.tags.some(t => t.toLowerCase().includes(searchText));
                 });
-                const maxRate = matches.length > 0 ? Math.max(...matches.map(o => o.rate)) : 0;
+                matches.sort((a,b) => b.rate - a.rate);
+                
+                const maxRate = matches.length > 0 ? matches[0].rate : 0;
                 return { ...card, matches, maxRate, hasMatch: matches.length > 0 };
             }).filter(c => c.hasMatch).sort((a,b) => b.maxRate - a.maxRate);
 
@@ -512,7 +530,23 @@
             filtered.forEach(card => {
                 const el = document.createElement('div');
                 el.className = "glass-card rounded-3xl p-5 mb-4 fade-in relative";
-                el.innerHTML = `<div class="flex gap-3 items-center mb-4 pb-2 border-b border-gray-100/50"><span class="bank-badge ${card.color}">${card.bank}</span><h3 class="font-bold text-slate-700 serif-font text-lg">${card.name}</h3></div>`;
+                
+                // Header + Base Rewards
+                let baseRewardHtml = '';
+                let bases = [];
+                // Updated: Flag emoji and text
+                if(card.domesticBase) bases.push(`🇹🇼 台灣 ${card.domesticBase}`);
+                if(card.foreignBase) bases.push(`✈️ 國外 ${card.foreignBase}`);
+                if(card.baseCap) bases.push(`🛑 基礎上限: ${card.baseCap}`);
+                
+                if(bases.length > 0) {
+                    baseRewardHtml = `<div class="flex flex-wrap gap-2 mb-3 text-[10px] text-slate-500 font-bold bg-slate-50/50 p-2 rounded-xl border border-slate-100/50">` + 
+                        bases.map(b => `<span>${b}</span>`).join('<span class="opacity-30">|</span>') + 
+                    `</div>`;
+                }
+
+                el.innerHTML = `<div class="flex gap-3 items-center mb-2 pb-2 border-b border-gray-100/50"><span class="bank-badge ${card.color}">${card.bank}</span><h3 class="font-bold text-slate-700 serif-font text-lg">${card.name}</h3></div>${baseRewardHtml}`;
+                
                 card.matches.forEach(offer => {
                     let displayTags = offer.tags;
                     if (searchText) { const matchingTags = offer.tags.filter(t => t.toLowerCase().includes(searchText)); if (matchingTags.length > 0) displayTags = matchingTags; }
@@ -521,6 +555,7 @@
                     const hasMore = displayTags.length > TAG_LIMIT;
                     const shownTags = displayTags.slice(0, TAG_LIMIT);
                     const hiddenTags = displayTags.slice(TAG_LIMIT);
+                    const tagClassId = `extra-tag-${card.id}-${offer.category.replace(/\s/g,'')}`;
                     
                     let tagsHtml = shownTags.map(tag => {
                         const isHit = searchText && tag.toLowerCase().includes(searchText);
@@ -529,17 +564,49 @@
                     }).join('');
 
                     if(hasMore) {
-                        const hiddenHtml = hiddenTags.map(tag => `<span class="text-[10px] px-2.5 py-1 rounded-full font-medium bg-slate-200/70 text-slate-700 hidden extra-tag-${card.id}-${offer.category.replace(/\s/g,'')}">${tag}</span>`).join('');
+                        const hiddenHtml = hiddenTags.map(tag => `<span class="text-[10px] px-2.5 py-1 rounded-full font-medium bg-slate-200/70 text-slate-700 hidden ${tagClassId}">${tag}</span>`).join('');
                         tagsHtml += hiddenHtml;
-                        tagsHtml += `<button onclick="this.classList.add('hidden'); document.querySelectorAll('.extra-tag-${card.id}-${offer.category.replace(/\s/g,'')}').forEach(el=>el.classList.remove('hidden'))" class="text-[10px] px-2.5 py-1 rounded-full font-bold bg-indigo-100 text-indigo-500 hover:bg-indigo-200 transition-colors">+${hiddenTags.length}</button>`;
+                        // Updated: Toggle button
+                        tagsHtml += `<button onclick="toggleTags(this, '${tagClassId}', ${hiddenTags.length})" class="text-[10px] px-2.5 py-1 rounded-full font-bold bg-indigo-100 text-indigo-500 hover:bg-indigo-200 transition-colors">+${hiddenTags.length}</button>`;
                     }
 
-                    const capD = offer.cap ? `上限 ${offer.cap}` : '上限 ?';
-                    const baseD = offer.baseRate ? `基礎 ${offer.baseRate}` : '基礎 ?';
-                    el.innerHTML += `<div class="mb-4 last:mb-0"><div class="flex justify-between items-center mb-1"><h4 class="font-bold text-slate-600 text-sm flex items-center gap-1.5">★ ${offer.category}</h4><span class="text-xl font-bold text-indigo-500 serif-font">${offer.rate}%</span></div><div class="flex flex-wrap gap-2 mb-2 mt-1 opacity-80"><span class="text-[10px] text-slate-500 font-bold">${baseD}</span><span class="text-[10px] text-slate-500 font-bold">${capD}</span></div><p class="text-xs text-slate-500 mb-2 leading-relaxed">${offer.desc}</p><div class="flex flex-wrap gap-1.5">${tagsHtml}</div></div>`;
+                    let infoBadges = '';
+                    if(offer.paymentMethod) infoBadges += `<span class="text-[9px] bg-blue-50 text-blue-500 border border-blue-100 px-1.5 py-0.5 rounded-2xl font-bold ml-1">限 ${offer.paymentMethod}</span>`;
+                    if(offer.totalRate) infoBadges += `<span class="text-[9px] bg-pink-50 text-pink-500 border border-pink-100 px-1.5 py-0.5 rounded-2xl font-bold ml-1">🔥 最高 ${offer.totalRate}</span>`;
+                    
+                    // NEW: Add Min Spend Badge
+                    if(card.defaultMin > 0) infoBadges += `<span class="text-[9px] bg-orange-50 text-orange-500 border border-orange-100 px-1.5 py-0.5 rounded-2xl font-bold ml-1">💰 低消: $${card.defaultMin.toLocaleString()}</span>`;
+
+                    // Move Bonus Cap to Left
+                    if(offer.bonusCap) infoBadges += `<span class="text-[9px] bg-pink-50 text-pink-500 border border-pink-100 px-1.5 py-0.5 rounded-2xl font-bold ml-1">🛑 上限: ${offer.bonusCap}</span>`;
+
+                    let extraDetails = '';
+                    if(offer.bonusRate) extraDetails += `<span class="text-[10px] text-indigo-400 font-bold mr-2">🎁 加碼: ${offer.bonusRate}</span>`;
+                    
+                    if(extraDetails) extraDetails = `<div class="mb-1.5 flex flex-wrap">${extraDetails}</div>`;
+                    
+                    el.innerHTML += `<div class="mb-4 last:mb-0 p-3 bg-white/40 rounded-2xl border border-white/50 shadow-sm"><div class="flex justify-between items-center mb-1"><h4 class="font-bold text-slate-700 text-sm flex items-center gap-1.5 flex-wrap">★ ${offer.category} ${infoBadges}</h4><span class="text-xl font-bold text-indigo-500 serif-font">${offer.rateStr}</span></div>${extraDetails}<p class="text-xs text-slate-500 mb-2 leading-relaxed">${offer.desc}</p><div class="flex flex-wrap gap-1.5">${tagsHtml}</div></div>`;
                 });
                 container.appendChild(el);
             });
+        }
+        
+        // Updated: Tag Toggle Logic
+        window.toggleTags = function(btn, classId, count) {
+            const els = document.querySelectorAll('.' + classId);
+            const isHidden = els[0].classList.contains('hidden');
+            
+            els.forEach(el => el.classList.toggle('hidden'));
+            
+            if(isHidden) {
+                btn.innerText = "收起";
+                btn.classList.add('bg-slate-200', 'text-slate-500');
+                btn.classList.remove('bg-indigo-100', 'text-indigo-500');
+            } else {
+                btn.innerText = "+" + count;
+                btn.classList.remove('bg-slate-200', 'text-slate-500');
+                btn.classList.add('bg-indigo-100', 'text-indigo-500');
+            }
         }
 
         // --- MANAGE VIEW ---
@@ -736,7 +803,8 @@
                                 desc: offer.desc, 
                                 category: offer.category, 
                                 score: score,
-                                reason: matchedReason
+                                reason: matchedReason,
+                                paymentMethod: offer.paymentMethod
                             });
                         }
                     });
@@ -753,14 +821,16 @@
                     introText += "：<br><br>";
                     replyHtml += introText;
                     topResults.forEach(r => {
+                        const payMethodHtml = r.paymentMethod ? `<span class="text-[9px] bg-yellow-50 text-orange-500 px-1 py-0.5 rounded border border-yellow-100 ml-1">限 ${r.paymentMethod}</span>` : '';
                         replyHtml += `<div class="mb-3 pb-3 border-b border-slate-100 last:border-0 last:mb-0 last:pb-0">
                             <div class="flex justify-between items-start">
                                 <div class="font-bold text-indigo-600 text-sm">💳 ${r.bank} ${r.cardName}</div>
                                 <span class="text-lg font-bold text-pink-500 flex-shrink-0">${r.rate}%</span>
                             </div>
-                            <div class="flex items-center gap-2 mt-1">
+                            <div class="flex items-center gap-2 mt-1 flex-wrap">
                                 <span class="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-500 font-bold">${r.category}</span>
-                                ${r.reason ? `<span class="text-[9px] bg-yellow-50 text-orange-500 px-1.5 py-0.5 rounded font-bold border border-yellow-100">💡 命中: ${r.reason}</span>` : ''}
+                                ${payMethodHtml}
+                                ${r.reason ? `<span class="text-[9px] bg-green-50 text-emerald-500 px-1.5 py-0.5 rounded font-bold border border-green-100">💡 命中: ${r.reason}</span>` : ''}
                             </div>
                             <div class="text-xs text-slate-400 mt-1 leading-snug">${r.desc}</div>
                         </div>`;
@@ -844,8 +914,15 @@
                     document.getElementById('txCardSelect').value = tx.cardId;
                     document.getElementById('txAmount').value = tx.amount;
                     document.getElementById('txDate').value = tx.date;
-                    document.getElementById('txCategory').value = tx.category || '🍽️ 餐飲';
-                    document.getElementById('txItem').value = tx.item || '';
+                    
+                    if(tx.category) {
+                         document.getElementById('txCategory').value = tx.category;
+                         document.getElementById('txItem').value = tx.item || '';
+                    } else {
+                        document.getElementById('txCategory').value = "📦 其他";
+                        document.getElementById('txItem').value = tx.item || '';
+                    }
+
                     document.getElementById('txNote').value = tx.note || '';
                     document.getElementById('checkReward').checked = tx.types.includes('reward');
                     document.getElementById('checkGeneral').checked = tx.types.includes('general');
