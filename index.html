@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>毛爸毛媽的信用卡權益 V75</title>
+    <title>毛爸毛媽的信用卡權益 V81</title>
     
     <!-- PWA Settings -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -140,7 +140,12 @@
                         </div>
                         <button onclick="document.getElementById('cloudModal').classList.remove('hidden')" class="w-11 h-11 flex items-center justify-center bg-white border border-indigo-50 rounded-xl text-indigo-400 shadow-sm hover:text-indigo-600 active:scale-95 transition"><i data-lucide="settings" class="w-5 h-5"></i></button>
                      </div>
-                    <div class="flex gap-2"><div class="relative flex-1"><select id="manageCardFilter" class="w-full bg-white/90 border border-indigo-100 rounded-xl py-2.5 pl-3 pr-8 text-xs font-bold text-slate-600 outline-none shadow-sm focus:ring-2 focus:ring-indigo-200"><option value="">💳 所有信用卡</option></select></div><button onclick="window.openHistoryModal()" class="flex-none px-4 py-2.5 bg-indigo-500 text-white rounded-xl shadow-md text-xs font-bold flex items-center gap-1 active:scale-95 transition-transform hover:bg-indigo-600"><i data-lucide="receipt" class="w-4 h-4"></i> 歷史帳本</button></div>
+                    <!-- New Sort Button added here -->
+                    <div class="flex gap-2">
+                        <div class="relative flex-1"><select id="manageCardFilter" class="w-full bg-white/90 border border-indigo-100 rounded-xl py-2.5 pl-3 pr-8 text-xs font-bold text-slate-600 outline-none shadow-sm focus:ring-2 focus:ring-indigo-200"><option value="">💳 所有信用卡</option></select></div>
+                        <button onclick="openCardSortModal()" class="flex-none w-11 h-11 bg-white border border-indigo-50 text-indigo-500 rounded-xl shadow-sm flex items-center justify-center active:scale-95 transition-transform hover:bg-indigo-50"><i data-lucide="list-ordered" class="w-5 h-5"></i></button>
+                        <button onclick="window.openHistoryModal()" class="flex-none px-4 py-2.5 bg-indigo-500 text-white rounded-xl shadow-md text-xs font-bold flex items-center gap-1 active:scale-95 transition-transform hover:bg-indigo-600"><i data-lucide="receipt" class="w-4 h-4"></i> 歷史帳本</button>
+                    </div>
                 </div>
                 <div id="smallPayControls" class="hidden fade-in mt-2 space-y-3"><div class="bg-white p-4 rounded-2xl border border-orange-100 shadow-sm relative"><div class="flex justify-between items-start mb-2"><div class="flex items-center gap-2"><i data-lucide="shield-alert" class="w-5 h-5 text-orange-500"></i><h2 class="text-sm font-bold text-slate-800">小額支付平台查詢</h2></div><button onclick="document.getElementById('smallPayDbModal').classList.remove('hidden')" class="text-[10px] text-indigo-500 underline">手動匯入</button></div><div class="relative mb-3"><div class="relative bg-slate-50 rounded-xl shadow-inner border border-slate-200 flex items-center"><i data-lucide="search" class="absolute left-3 w-4 h-4 text-slate-400"></i><input type="text" id="smallPayInput" placeholder="輸入品牌 (如: 鶴茶樓)..." autocomplete="off" class="w-full pl-10 pr-10 py-3 rounded-xl border-none outline-none bg-transparent text-slate-700 placeholder-slate-400 text-sm font-bold" oninput="onSmallPayInput(this.value)"><button onclick="clearSmallPaySearch()" class="absolute right-3 text-slate-300 hover:text-slate-500 p-1"><i data-lucide="x" class="w-4 h-4"></i></button></div><div id="smallPaySuggestions" class="suggestions-box hidden"></div></div><div class="relative"><select id="smallPayCitySelect" onchange="filterSmallPayByCity()" class="w-full bg-orange-50/50 border border-orange-100 rounded-xl py-2.5 pl-3 pr-8 text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-orange-200"><option value="">🏙️ 依縣市查詢店家</option></select></div></div><div id="smallPayResult" class="hidden animate-in fade-in slide-in-from-top-2"></div><div class="text-[10px] text-slate-300 text-center mt-2" id="smallPayStats">資料載入中...</div></div>
             </div>
@@ -174,6 +179,22 @@
         </div>
     </div>
 
+    <!-- Card Sort Modal -->
+    <div id="cardSortModal" class="fixed inset-0 bg-slate-900/60 z-[65] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl w-full max-w-sm shadow-2xl flex flex-col max-h-[80vh]">
+            <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="font-bold text-lg text-slate-800">調整信用卡順序</h3>
+                <button onclick="document.getElementById('cardSortModal').classList.add('hidden')" class="p-1 hover:bg-slate-100 rounded-full"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button>
+            </div>
+            <div id="cardSortList" class="flex-1 overflow-y-auto p-2 space-y-1">
+                <!-- Items injected by JS -->
+            </div>
+            <div class="p-4 border-t border-slate-100">
+                <button onclick="document.getElementById('cardSortModal').classList.add('hidden'); showToast('設定已儲存');" class="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold shadow-md">完成</button>
+            </div>
+        </div>
+    </div>
+
     <div id="cloudModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in text-center">
             <h3 class="font-bold text-lg mb-4 text-slate-800 serif-font text-center">使用者設定</h3>
@@ -203,9 +224,9 @@
                 <div><label class="text-xs font-bold text-slate-400 mb-1.5 block">消費細項 <span class="text-indigo-400 text-[10px]">(選填)</span></label><input type="text" id="txItem" class="w-full bg-slate-50 border-none rounded-xl p-3.5 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-indigo-200" placeholder="例如：麥當勞、全聯..."></div>
                 <div><label class="text-xs font-bold text-slate-400 mb-1.5 block">消費類型</label><div class="flex gap-3"><label class="flex-1 cursor-pointer custom-checkbox"><input type="checkbox" id="checkReward" value="reward" class="hidden" checked><div class="border border-slate-200 rounded-xl py-3 text-center text-xs font-bold text-slate-500 transition-colors select-none">指定回饋</div></label><label class="flex-1 cursor-pointer custom-checkbox"><input type="checkbox" id="checkGeneral" value="general" class="hidden"><div class="border border-slate-200 rounded-xl py-3 text-center text-xs font-bold text-slate-500 transition-colors select-none">一般/低消</div></label></div></div>
                 <div><input type="text" id="txNote" class="w-full bg-transparent border-b border-slate-200 p-2 text-sm text-slate-600 outline-none placeholder-slate-300" placeholder="備註 (選填)..."></div>
-                <!-- V75 Fix: Added explicit style to delete button wrapper to ensure visibility -->
+                <!-- V79: Button logic managed by JS -->
                 <div class="flex gap-3 mt-4 pt-2">
-                    <button id="btnDeleteTx" class="hidden flex-1 py-3.5 rounded-xl border border-red-200 text-red-500 font-bold bg-red-50 hover:bg-red-100 transition-colors" onclick="openDeleteConfirm()">刪除</button>
+                    <button id="btnDeleteTx" class="hidden flex-1 py-3.5 rounded-xl border border-red-200 text-red-500 font-bold bg-red-50 hover:bg-red-100 transition-colors">刪除</button>
                     <button onclick="saveTransaction()" class="flex-[2] bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold py-3.5 rounded-xl shadow-lg hover:shadow-indigo-200/50 transition-all active:scale-[0.98]">儲存</button>
                 </div>
             </div>
@@ -245,6 +266,7 @@
         let editingCardId = null;
         let tempPin = '';
         let pendingUser = '';
+        let cardSortOrder = []; // V81 Added
 
         const getStorageKey = (key) => currentUser ? `cc_${key}_${currentUser}` : null;
 
@@ -269,6 +291,42 @@
             login.classList.remove('hidden');
             
             // Wait for login
+        }
+        
+        // --- V80 Fix: checkScroll ---
+        window.checkScroll = function() { 
+            const btn = document.getElementById('btnBackToTop'); 
+            if(window.scrollY > 200) btn.classList.add('show'); 
+            else btn.classList.remove('show'); 
+        }
+        window.addEventListener('scroll', checkScroll);
+
+        // --- V81 Fix: User Switch ---
+        window.switchUser = function(user) {
+            currentUser = user;
+            localStorage.setItem('cc_current_user', user);
+            API_URL = USER_CONFIGS[user];
+            
+            // Re-load everything for new user
+            cardSettings = JSON.parse(localStorage.getItem(getStorageKey('card_settings')) || '{}');
+            transactions = JSON.parse(localStorage.getItem(getStorageKey('transactions')) || '[]');
+            cardSortOrder = JSON.parse(localStorage.getItem(getStorageKey('card_order')) || '[]');
+            
+            // Update UI
+            document.getElementById('userBadge').innerText = user === 'Lynn' ? "🐱 Lynn" : "🦁 Andy";
+            document.getElementById('gasUrl').value = API_URL;
+            
+            // Visual feedback in modal
+            const btnLynn = document.getElementById('btnUserLynn');
+            const btnAndy = document.getElementById('btnUserAndy');
+            
+            btnLynn.className = user === 'Lynn' ? "py-3 text-sm font-bold rounded-xl border-2 border-pink-400 bg-pink-50 text-pink-600 transition-all flex flex-col items-center gap-1 shadow-sm" : "py-3 text-sm font-bold rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-pink-50 transition-all flex flex-col items-center gap-1 shadow-sm";
+            btnAndy.className = user === 'Andy' ? "py-3 text-sm font-bold rounded-xl border-2 border-blue-400 bg-blue-50 text-blue-600 transition-all flex flex-col items-center gap-1 shadow-sm" : "py-3 text-sm font-bold rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-blue-50 transition-all flex flex-col items-center gap-1 shadow-sm";
+
+            // Sync
+            syncWithCloud();
+            renderView();
+            showToast(`已切換為 ${user}`);
         }
 
         // --- LOGIN LOGIC ---
@@ -324,23 +382,16 @@
         }
 
         window.loginSuccess = function(user) {
-            currentUser = user;
-            localStorage.setItem('cc_current_user', user);
-            API_URL = USER_CONFIGS[user];
+            // Initial load calls switchUser to set up everything
+            switchUser(user);
             
             document.getElementById('loginScreen').classList.add('opacity-0', 'pointer-events-none');
             setTimeout(() => {
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('appContainer').classList.remove('hidden');
-                
-                // FORCE UI UPDATE: Ensure tab is active and FAB is visible
                 switchTab('manage'); 
-                
                 setTimeout(() => document.getElementById('appContainer').classList.remove('opacity-0'), 50);
             }, 500);
-
-            updateUserUI();
-            loadUserData();
         }
 
         window.logout = function() {
@@ -361,13 +412,13 @@
             if (!currentUser) return;
             cardSettings = JSON.parse(localStorage.getItem(getStorageKey('card_settings')) || '{}');
             transactions = JSON.parse(localStorage.getItem(getStorageKey('transactions')) || '[]');
+            cardSortOrder = JSON.parse(localStorage.getItem(getStorageKey('card_order')) || '[]'); // V81 Added
             document.getElementById('gasUrl').value = API_URL;
             syncWithCloud();
         }
 
         function updateUserUI() {
             const badge = document.getElementById('userBadge');
-            
             if (currentUser === 'Lynn') {
                 badge.innerText = "🐱 Lynn";
                 badge.classList.remove('hidden');
@@ -381,6 +432,28 @@
         window.initCategoryDropdown = function() { const s = document.getElementById('txCategory'); s.innerHTML=''; TX_CATEGORIES.forEach(c => { const o = document.createElement('option'); o.value=c; o.text=c; s.appendChild(o); }); }
         window.initCityDropdown = function() { const s = document.getElementById('smallPayCitySelect'); s.innerHTML='<option value="">🏙️ 依縣市查詢店家</option>'; TAIWAN_CITIES.forEach(c => { const o = document.createElement('option'); o.value=c; o.text=c; s.appendChild(o); }); }
         
+        function getCycleRange(settings, refDate) { 
+            const year = refDate.getFullYear(), month = refDate.getMonth(), day = refDate.getDate(); 
+            let start, end; 
+            if (settings.cycleType === 'month') { 
+                start = new Date(year, month, 1); 
+                end = new Date(year, month + 1, 0); 
+            } else { 
+                const billDay = parseInt(settings.billDay) || 1; 
+                if (day > billDay) { 
+                    start = new Date(year, month, billDay + 1); 
+                    end = new Date(year, month + 1, billDay); 
+                } else { 
+                    start = new Date(year, month - 1, billDay + 1); 
+                    end = new Date(year, month, billDay); 
+                } 
+            } 
+            const offset = start.getTimezoneOffset() * 60000;
+            const startStr = new Date(start.getTime() - offset).toISOString().split('T')[0];
+            const endStr = new Date(end.getTime() - offset).toISOString().split('T')[0];
+            return { start: startStr, end: endStr }; 
+        }
+
         window.processRawData = function(data) { 
             const map = new Map(); uniqueBanks = []; 
             data.forEach(row => { 
@@ -489,7 +562,20 @@
         
         window.getCardDefaultCap = function(id) { const c = allCardsData.find(x => x.id === id); if(c && c.offers.length > 0) for(let o of c.offers) { if(o.cap && !o.cap.includes("無")) { const n = parseFloat(o.cap.replace(/[^\d.]/g, '')); if(!isNaN(n) && n > 0) return n; } } return 0; }
         
-        window.saveCloudSettings = async function() { document.getElementById('cloudModal').classList.add('hidden'); syncWithCloud(); }
+        window.postToCloud = async function(tx, action='save') { 
+            if(!API_URL) return { status: 'error', message: 'No API URL' }; 
+            try { 
+                const response = await fetch(API_URL + `?action=${action}`, { 
+                    method: 'POST', 
+                    body: JSON.stringify(tx) 
+                });
+                return await response.json();
+            } catch(e) { 
+                console.error(e);
+                return { status: 'error', message: e.toString() }; 
+            } 
+        }
+
         window.syncWithCloud = async function() { 
             if(!API_URL) return; 
             showLoading(true, "雲端同步中..."); 
@@ -503,10 +589,6 @@
                     showToast('同步完成'); 
                 } 
             } catch(e) { showToast('同步失敗'); } finally { showLoading(false); } 
-        }
-        window.postToCloud = async function(tx, action='save') { 
-            if(!API_URL) return; 
-            try { await fetch(API_URL + `?action=${action}${action==='delete'?'&id='+tx.id:''}`, { method: 'POST', body: JSON.stringify(tx) }); } catch(e) {} 
         }
         
         window.showLoading = function(show, text = "雲端同步中...") { document.getElementById('loadingText').innerText=text; document.getElementById('loadingOverlay').classList.toggle('hidden', !show); }
@@ -668,13 +750,9 @@
                 if(currentUser === 'Lynn' && card.lynnBillDay > 0) csvBillDay = card.lynnBillDay;
                 else if(currentUser === 'Andy' && card.andyBillDay > 0) csvBillDay = card.andyBillDay;
 
-                // Load saved settings or create default
                 const savedSettings = cardSettings[card.id];
                 let settings = savedSettings ? { ...savedSettings } : { cycleType: 'month', billDay: 1, customCap: 0, customMin: 0 };
 
-                // FORCE UPDATE logic: If CSV implies a bill day, default to 'bill' mode
-                // unless user specifically set it to 'month' in the past (which we assume if savedSettings exists and cycleType is month)
-                // However, to satisfy "自動寫入", if savedSettings is missing OR if we want to sync, we check:
                 if (csvBillDay > 0) {
                     if (!savedSettings || (savedSettings && savedSettings.cycleType === 'bill')) {
                          settings.cycleType = 'bill';
@@ -1011,125 +1089,189 @@
                     replyHtml += `🤔 嗚... 針對「${msg}」我找不到明確的優惠資料耶。<br><br>試試看搜尋別的？例如：「餐廳」、「網購」。`;
                 }
 
-                chatBox.innerHTML += `<div class="flex gap-3 mb-4"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-rose-400 flex items-center justify-center text-white flex-shrink-0"><i data-lucide="bot" class="w-4 h-4"></i></div><div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm text-sm text-slate-700 max-w-[85%]">${replyHtml}</div></div>`;
+                chatBox.innerHTML += `<div class="flex gap-3 mb-4"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-rose-400 flex items-center justify-center text-white flex-shrink-0"><i data-lucide="bot" class="w-4 h-4"></i></div><div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm text-sm text-slate-700 max-w-[80%]">${replyHtml}</div></div>`;
                 chatBox.scrollTop = chatBox.scrollHeight;
                 lucide.createIcons();
             }, 800);
         }
 
-        window.onSmallPayInput = function(val) {
-            const input = val.trim().toLowerCase();
-            const suggestionsBox = document.getElementById('smallPaySuggestions');
-            const resultDiv = document.getElementById('smallPayResult');
-            if (input.length < 1) { suggestionsBox.classList.add('hidden'); resultDiv.classList.add('hidden'); return; }
-            const matches = SMALL_PAYMENT_STORES_DB.filter(s => s.name.toLowerCase().includes(input)).slice(0, 15);
-            if (matches.length > 0) {
-                let html = '';
-                matches.forEach(m => {
-                    const regex = new RegExp(`(${val})`, 'gi');
-                    const highlight = m.name.replace(regex, '<span class="suggestion-match">$1</span>');
-                    html += `<div class="suggestion-item" onclick="selectSuggestion('${m.name}')"><span class="truncate pr-2">${highlight}</span><span class="suggestion-city whitespace-nowrap">${m.city}</span></div>`;
-                });
-                suggestionsBox.innerHTML = html;
-                suggestionsBox.classList.remove('hidden');
-            } else { suggestionsBox.classList.add('hidden'); }
-        }
-        window.selectSuggestion = function(val) { document.getElementById('smallPayInput').value = val; document.getElementById('smallPaySuggestions').classList.add('hidden'); checkSmallPay(val); }
-        window.clearSmallPaySearch = function() { document.getElementById('smallPayInput').value = ''; document.getElementById('smallPaySuggestions').classList.add('hidden'); document.getElementById('smallPayResult').classList.add('hidden'); }
-        window.checkSmallPay = function(inputVal) {
-            const input = inputVal || document.getElementById('smallPayInput').value.trim();
-            const resultDiv = document.getElementById('smallPayResult');
-            if(!input) { resultDiv.classList.add('hidden'); return; }
-            const match = SMALL_PAYMENT_STORES_DB.find(s => s.name === input || s.name.includes(input));
-            resultDiv.classList.remove('hidden');
-            if(match) { resultDiv.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-xl p-4 flex gap-3 items-start animate-pulse"><i data-lucide="alert-triangle" class="w-6 h-6 text-red-500 flex-shrink-0 mt-0.5"></i><div><h3 class="font-bold text-red-600 text-lg mb-1">這是小額支付平台！</h3><p class="text-xs text-red-500 font-bold leading-relaxed">「${match.name}」(${match.city}) 屬於小額支付名單。<br>⚠️ 直接刷卡可能<span class="underline">無回饋</span>。<br><span class="text-[10px] text-slate-400 mt-1 block">地址: ${match.address}</span></p></div></div>`; } 
-            else { const isChain = SMALL_PAYMENT_CHAINS.some(c => input.includes(c)); if(isChain) { resultDiv.innerHTML = `<div class="bg-red-50 border border-red-200 rounded-xl p-4"><h3 class="font-bold text-red-600 text-lg">⚠️ 連鎖店注意</h3><p class="text-xs text-red-500">此品牌通常為小額支付，請確認。</p></div>`; } else { resultDiv.innerHTML = `<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex gap-3 items-start"><i data-lucide="check-circle-2" class="w-6 h-6 text-emerald-500 flex-shrink-0 mt-0.5"></i><div><h3 class="font-bold text-emerald-600 text-lg mb-1">未列在名單中</h3><p class="text-xs text-emerald-500 font-bold leading-relaxed">資料庫無「${input}」紀錄。<br>應可享有回饋。</p></div></div>`; } }
-            lucide.createIcons();
-        }
-        window.filterSmallPayByCity = function() {
-            const city = document.getElementById('smallPayCitySelect').value;
-            const resultDiv = document.getElementById('smallPayResult');
-            if(!city) { resultDiv.classList.add('hidden'); return; }
-            const localStores = SMALL_PAYMENT_STORES_DB.filter(s => s.city === city || s.city === '全台');
-            let html = `<div class="bg-white border border-slate-200 rounded-xl p-3 max-h-60 overflow-y-auto space-y-2">`;
-            if(localStores.length > 0) { localStores.forEach(s => { html += `<div class="flex justify-between items-center text-xs border-b border-slate-100 pb-2 last:border-0 last:pb-0"><span class="font-bold text-slate-700">${s.name}</span><span class="text-slate-400 text-[10px] truncate max-w-[150px]">${s.address}</span></div>`; }); } else { html += `<div class="text-center text-slate-400 py-4">無資料</div>`; }
-            html += `</div>`; resultDiv.innerHTML = html; resultDiv.classList.remove('hidden');
-        }
-        function checkScroll() { const btn = document.getElementById('btnBackToTop'); if(window.scrollY > 200) btn.classList.add('show'); else btn.classList.remove('show'); }
-        window.addEventListener('scroll', checkScroll);
-        function getCycleRange(settings, refDate) { const year = refDate.getFullYear(), month = refDate.getMonth(), day = refDate.getDate(); let start, end; if (settings.cycleType === 'month') { start = new Date(year, month, 1); end = new Date(year, month + 1, 0); } else { const billDay = parseInt(settings.billDay) || 1; if (day > billDay) { start = new Date(year, month, billDay + 1); end = new Date(year, month + 1, billDay); } else { start = new Date(year, month - 1, billDay + 1); end = new Date(year, month, billDay); } } return { start: start.toISOString().split('T')[0], end: end.toISOString().split('T')[0] }; }
-        
-        // --- TRANSACTION FUNCTIONS ---
-        window.openTransactionModal = function(existingTxId = null) {
-            const select = document.getElementById('txCardSelect'); select.innerHTML = '';
-            let sortedCards = [...allCardsData];
-            if(manageCardFilter) { sortedCards.sort((a,b) => (a.id === manageCardFilter ? -1 : 1)); }
+        // --- V81 Update: Card Sorting Logic ---
+        window.openCardSortModal = function() {
+            const modal = document.getElementById('cardSortModal');
+            const listContainer = document.getElementById('cardSortList');
+            if(!modal || !listContainer) return;
             
-            // Add a placeholder option
+            // If sort order is empty, populate with default order
+            if (cardSortOrder.length === 0) {
+                 cardSortOrder = allCardsData.map(c => c.id);
+            }
+            
+            // Ensure any new cards are added
+            const existingIds = new Set(cardSortOrder);
+            allCardsData.forEach(c => {
+                 if(!existingIds.has(c.id)) cardSortOrder.push(c.id);
+            });
+            
+            renderCardSortList();
+            modal.classList.remove('hidden');
+        }
+        
+        window.renderCardSortList = function() {
+             const listContainer = document.getElementById('cardSortList');
+             listContainer.innerHTML = '';
+             
+             // Only render cards that actually exist
+             const validOrder = cardSortOrder.filter(id => allCardsData.find(c => c.id === id));
+             // Save cleaned order
+             if(validOrder.length !== cardSortOrder.length) {
+                 cardSortOrder = validOrder;
+             }
+             
+             validOrder.forEach((cardId, index) => {
+                 const card = allCardsData.find(c => c.id === cardId);
+                 if(!card) return;
+                 
+                 const row = document.createElement('div');
+                 row.className = "flex justify-between items-center p-3 bg-slate-50 border border-slate-200 rounded-xl";
+                 row.innerHTML = `
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <span class="text-xs text-slate-400 font-mono w-4">${index + 1}</span>
+                        <div class="truncate">
+                           <span class="bank-badge ${card.color} scale-75 origin-left inline-block -mr-1">${card.bank}</span>
+                           <span class="text-sm font-bold text-slate-700">${card.name}</span>
+                        </div>
+                    </div>
+                    <div class="flex gap-1 flex-shrink-0">
+                        <button onclick="moveCard(${index}, -1)" class="p-1.5 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-indigo-500 hover:border-indigo-200 disabled:opacity-30" ${index === 0 ? 'disabled' : ''}><i data-lucide="arrow-up" class="w-4 h-4"></i></button>
+                        <button onclick="moveCard(${index}, 1)" class="p-1.5 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-indigo-500 hover:border-indigo-200 disabled:opacity-30" ${index === validOrder.length - 1 ? 'disabled' : ''}><i data-lucide="arrow-down" class="w-4 h-4"></i></button>
+                    </div>
+                 `;
+                 listContainer.appendChild(row);
+             });
+             lucide.createIcons();
+             
+             // Save automatically
+             localStorage.setItem(getStorageKey('card_order'), JSON.stringify(cardSortOrder));
+        }
+        
+        window.moveCard = function(index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= cardSortOrder.length) return;
+            
+            // Swap
+            const temp = cardSortOrder[index];
+            cardSortOrder[index] = cardSortOrder[newIndex];
+            cardSortOrder[newIndex] = temp;
+            
+            renderCardSortList();
+        }
+
+        // --- V79 Update: Robust Modal & Delete Logic ---
+        // V81 Update: Use sort order
+        window.openTransactionModal = function(existingTxId) {
+            const modal = document.getElementById('transactionModal');
+            if(!modal) return; 
+
+            const select = document.getElementById('txCardSelect');
+            const btnDel = document.getElementById('btnDeleteTx');
+            const title = document.getElementById('txModalTitle');
+            
+            // Populate Cards with Sort Order
+            select.innerHTML = '';
             const defaultOpt = document.createElement('option');
             defaultOpt.value = "";
             defaultOpt.text = "請選擇卡片";
             defaultOpt.disabled = true;
             defaultOpt.selected = true;
             select.appendChild(defaultOpt);
-
-            sortedCards.forEach(c => { const opt = document.createElement('option'); opt.value = c.id; opt.text = `${c.bank} - ${c.name}`; select.appendChild(opt); });
             
-            const btnDel = document.getElementById('btnDeleteTx');
-            const title = document.getElementById('txModalTitle');
+            let sortedCards = [...allCardsData];
+            
+            // Apply Sort
+            if (cardSortOrder.length > 0) {
+                sortedCards.sort((a, b) => {
+                    let idxA = cardSortOrder.indexOf(a.id);
+                    let idxB = cardSortOrder.indexOf(b.id);
+                    if (idxA === -1) idxA = 9999;
+                    if (idxB === -1) idxB = 9999;
+                    return idxA - idxB;
+                });
+            }
+            
+            // If filter is active, put that card first or filter others? 
+            // Usually filter means ONLY that card.
+            // But for "choose card", we usually want all options available but maybe filter selected.
+            // Let's stick to showing all sorted cards.
+            
+            sortedCards.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.id;
+                opt.text = `${c.bank} - ${c.name}`;
+                select.appendChild(opt);
+            });
 
+            // Logic Switch
             if (existingTxId) {
+                // EDIT MODE
+                editingTransactionId = existingTxId;
+                if(title) title.innerText = "修改消費紀錄";
+                
                 const tx = transactions.find(t => t.id === existingTxId);
                 if (tx) {
-                    editingTransactionId = tx.id;
-                    title.innerText = "修改消費紀錄";
-                    document.getElementById('txCardSelect').value = tx.cardId;
+                    select.value = tx.cardId;
                     document.getElementById('txAmount').value = tx.amount;
                     document.getElementById('txDate').value = tx.date;
+                    document.getElementById('txCategory').value = tx.category || "🍽️ 餐飲";
+                    document.getElementById('txItem').value = tx.item || "";
+                    document.getElementById('txNote').value = tx.note || "";
                     
-                    if(tx.category) {
-                         document.getElementById('txCategory').value = tx.category;
-                         document.getElementById('txItem').value = tx.item || '';
-                    } else {
-                        document.getElementById('txCategory').value = "📦 其他";
-                        document.getElementById('txItem').value = tx.item || '';
-                    }
-
-                    document.getElementById('txNote').value = tx.note || '';
-                    document.getElementById('checkReward').checked = tx.types.includes('reward');
-                    document.getElementById('checkGeneral').checked = tx.types.includes('general');
-                    
-                    // --- V75 Fix: FORCE DISPLAY BLOCK AND REMOVE HIDDEN ---
+                    const isReward = tx.types ? tx.types.includes('reward') : true;
+                    const isGeneral = tx.types ? tx.types.includes('general') : false;
+                    document.getElementById('checkReward').checked = isReward;
+                    document.getElementById('checkGeneral').checked = isGeneral;
+                }
+                
+                // Show Delete Button
+                if(btnDel) {
                     btnDel.classList.remove('hidden');
-                    btnDel.style.display = 'block'; 
+                    btnDel.style.display = 'block';
                     btnDel.onclick = function() { window.openDeleteConfirm(); };
                 }
             } else {
+                // ADD MODE
                 editingTransactionId = null;
-                title.innerText = "記一筆消費";
+                if(title) title.innerText = "記一筆消費";
+                
+                // Reset inputs
                 document.getElementById('txAmount').value = '';
-                document.getElementById('txCategory').value = "🍽️ 餐飲"; 
+                document.getElementById('txDate').valueAsDate = new Date();
+                document.getElementById('txCategory').value = "🍽️ 餐飲";
                 document.getElementById('txItem').value = '';
                 document.getElementById('txNote').value = '';
                 document.getElementById('checkReward').checked = true;
                 document.getElementById('checkGeneral').checked = false;
-                document.getElementById('txDate').valueAsDate = new Date();
                 
                 if(currentView === 'manage' && manageCardFilter) {
-                     document.getElementById('txCardSelect').value = manageCardFilter;
+                     select.value = manageCardFilter;
+                } else {
+                     select.value = "";
                 }
-                
-                // --- V75 Fix: FORCE DISPLAY NONE AND ADD HIDDEN ---
-                btnDel.classList.add('hidden');
-                btnDel.style.display = 'none'; 
+
+                // Hide Delete Button
+                if(btnDel) {
+                    btnDel.classList.add('hidden');
+                    btnDel.style.display = 'none'; 
+                }
             }
-            document.getElementById('transactionModal').classList.remove('hidden');
+            
+            modal.classList.remove('hidden');
         }
+
         window.closeTransactionModal = function() { document.getElementById('transactionModal').classList.add('hidden'); }
+        window.openDeleteConfirm = function() { document.getElementById('deleteConfirmModal').classList.remove('hidden'); }
         
         window.saveTransaction = async function() {
             if (!currentUser) return alert('請先選擇使用者身分 (設定 > 選擇身分)');
-            
             const cardId = document.getElementById('txCardSelect').value;
             const amount = parseFloat(document.getElementById('txAmount').value);
             const date = document.getElementById('txDate').value;
@@ -1140,21 +1282,12 @@
             if(document.getElementById('checkReward').checked) types.push('reward');
             if(document.getElementById('checkGeneral').checked) types.push('general');
 
-            // --- VALIDATION ALERT ---
-            const missing = [];
-            if (!cardId) missing.push("信用卡");
-            if (isNaN(amount) || amount <= 0) missing.push("金額");
-            if (!date) missing.push("日期");
-            if (!category) missing.push("類別");
-
-            if (missing.length > 0) {
-                alert(`請記得填寫以下欄位喔：\n${missing.join('、')}`);
+            if (!cardId || isNaN(amount) || amount <= 0 || !date) {
+                alert(`請記得填寫必要欄位喔`);
                 return;
             }
             
             showLoading(true, "雲端同步中...");
-            await new Promise(r => setTimeout(r, 50));
-
             let txData = { cardId, amount, date, category, item, note, types, timestamp: Date.now() };
 
             if (editingTransactionId) {
@@ -1178,24 +1311,25 @@
             if(!document.getElementById('historyModal').classList.contains('hidden')) window.openHistoryModal();
         }
 
-        window.openDeleteConfirm = function() { document.getElementById('deleteConfirmModal').classList.remove('hidden'); }
-        
         window.executeDelete = async function() {
             if (!currentUser) return;
             document.getElementById('deleteConfirmModal').classList.add('hidden'); 
             showLoading(true, "雲端刪除中...");
             
-            transactions = transactions.filter(t => t.id !== editingTransactionId);
-            localStorage.setItem(getStorageKey('transactions'), JSON.stringify(transactions));
+            const result = await postToCloud({id: editingTransactionId}, 'delete'); 
             
-            // --- V74: Ensure payload is correct for delete action ---
-            await postToCloud({id: editingTransactionId}, 'delete'); 
-            
-            showToast('✅ 刪除成功');
+            if (result && result.status === 'success') {
+                transactions = transactions.filter(t => t.id !== editingTransactionId);
+                localStorage.setItem(getStorageKey('transactions'), JSON.stringify(transactions));
+                showToast('✅ 刪除成功');
+                closeTransactionModal();
+                renderView();
+                if(!document.getElementById('historyModal').classList.contains('hidden')) window.openHistoryModal();
+            } else {
+                console.error("Delete failed:", result);
+                alert('刪除失敗：雲端資料庫未回應或找不到該筆資料。\n請確認網路連線或稍後再試。');
+            }
             showLoading(false);
-            closeTransactionModal();
-            renderView();
-            if(!document.getElementById('historyModal').classList.contains('hidden')) window.openHistoryModal();
         }
         
         document.getElementById('bankSelect').addEventListener('change', (e) => { currentBankFilter = e.target.value; currentCardFilter = ''; const s=document.getElementById('cardSelect'); s.innerHTML='<option value="">所有卡片</option>'; if(currentBankFilter) { allCardsData.filter(c=>c.bank===currentBankFilter).forEach(c=>{const o=document.createElement('option');o.value=c.name;o.text=c.name;s.appendChild(o)});s.disabled=false;}else s.disabled=true; renderView(); });
