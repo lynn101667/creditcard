@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>毛爸毛媽的信用卡權益 V92</title>
+    <title>毛爸毛媽的信用卡權益 V94</title>
     
     <!-- PWA Settings -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -129,7 +129,7 @@
         </div>
 
         <!-- Header -->
-        <div class="sticky top-0 z-30 bg-white/80 backdrop-blur-md shadow-sm border-b border-white/50 transition-all duration-300">
+        <div class="sticky top-0 z-30 bg-white/80 backdrop-blur-md shadow-sm border-b border-white/50 transition-all duration-300" style="padding-top: env(safe-area-inset-top);">
             <div class="max-w-md mx-auto px-5 py-4">
                 <div class="flex justify-between items-center mb-2">
                     <div class="flex items-center gap-2">
@@ -249,7 +249,7 @@
     <!-- History & Settings Modals -->
     <!-- Updated History Modal -->
     <div id="historyModal" class="fixed inset-0 bg-slate-50 z-50 hidden flex flex-col">
-        <div class="bg-white border-b border-slate-100 p-4 pt-safe-top flex justify-between items-center shadow-sm z-10 sticky top-0">
+        <div class="bg-white border-b border-slate-100 p-4 flex justify-between items-center shadow-sm z-10 sticky top-0" style="padding-top: calc(1rem + env(safe-area-inset-top));">
             <div class="flex items-center gap-2">
                 <button onclick="closeHistoryModal()" class="p-2 -ml-2 text-slate-400 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
                 <h2 class="text-lg font-bold text-slate-800 serif-font">歷史帳本</h2>
@@ -311,6 +311,11 @@
         let cardSortOrder = []; 
         let sortableInstance = null; // For Drag and Drop
         let historyChartInstance = null; // For ChartJS
+        
+        // --- ADDED FOR V94 ---
+        let currentSmallPayResults = [];
+        let currentSmallPayPage = 1;
+        const SMALL_PAY_ITEMS_PER_PAGE = 20;
 
         const getStorageKey = (key) => currentUser ? `cc_${key}_${currentUser}` : null;
 
@@ -1327,6 +1332,91 @@
         window.closeSettingsModal = function() { document.getElementById('settingsModal').classList.add('hidden'); }
 
         // --- SMALL PAY FUNCTIONS ---
+        // V94 Update: New Table Rendering Logic
+        window.filterSmallPayByCity = function() {
+             const city = document.getElementById('smallPayCitySelect').value;
+             document.getElementById('smallPayInput').value = ''; 
+             document.getElementById('smallPaySuggestions').classList.add('hidden');
+
+             if(!city) {
+                 document.getElementById('smallPayResult').classList.add('hidden');
+                 return;
+             }
+             
+             currentSmallPayResults = SMALL_PAYMENT_STORES_DB.filter(s => s.city.includes(city) || s.city === '全台');
+             currentSmallPayPage = 1;
+             
+             renderSmallPayTable();
+        }
+
+        window.renderSmallPayTable = function() {
+            const resDiv = document.getElementById('smallPayResult');
+            
+            if (currentSmallPayResults.length === 0) {
+                resDiv.innerHTML = `<div class="p-4 text-center text-slate-400 text-sm">該縣市尚無資料</div>`;
+                resDiv.classList.remove('hidden');
+                return;
+            }
+
+            const totalPages = Math.ceil(currentSmallPayResults.length / SMALL_PAY_ITEMS_PER_PAGE);
+            const start = (currentSmallPayPage - 1) * SMALL_PAY_ITEMS_PER_PAGE;
+            const end = start + SMALL_PAY_ITEMS_PER_PAGE;
+            const pageData = currentSmallPayResults.slice(start, end);
+
+            let html = `
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden fade-in">
+                    <div class="p-3 bg-indigo-50 border-b border-indigo-100 flex justify-between items-center">
+                        <span class="text-xs font-bold text-indigo-600">搜尋結果: ${currentSmallPayResults.length} 筆</span>
+                        <span class="text-[10px] text-slate-400">第 ${currentSmallPayPage} / ${totalPages} 頁</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
+                                <tr>
+                                    <th class="px-3 py-2 whitespace-nowrap">店家名稱</th>
+                                    <th class="px-3 py-2 whitespace-nowrap">區域</th>
+                                    <th class="px-3 py-2 whitespace-nowrap">備註</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+            `;
+
+            pageData.forEach(item => {
+                html += `
+                    <tr class="hover:bg-slate-50/50">
+                        <td class="px-3 py-2 font-bold text-slate-700">${item.name}</td>
+                        <td class="px-3 py-2 text-slate-500">${item.city}</td>
+                        <td class="px-3 py-2 text-slate-400 truncate max-w-[100px]">${item.address || '-'}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-3 border-t border-slate-100 flex justify-between items-center gap-2">
+                        <button onclick="changeSmallPayPage(-1)" ${currentSmallPayPage === 1 ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-500 text-xs font-bold disabled:opacity-30 hover:bg-slate-200">上一頁</button>
+                        <span class="text-xs font-bold text-slate-400">${currentSmallPayPage}</span>
+                        <button onclick="changeSmallPayPage(1)" ${currentSmallPayPage === totalPages ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-600 text-xs font-bold disabled:opacity-30 hover:bg-indigo-100">下一頁</button>
+                    </div>
+                </div>
+            `;
+
+            resDiv.innerHTML = html;
+            resDiv.classList.remove('hidden');
+        }
+
+        window.changeSmallPayPage = function(delta) {
+            const totalPages = Math.ceil(currentSmallPayResults.length / SMALL_PAY_ITEMS_PER_PAGE);
+            const newPage = currentSmallPayPage + delta;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentSmallPayPage = newPage;
+                renderSmallPayTable();
+            }
+        }
+
+        // Keep existing single store check logic for search input
         window.onSmallPayInput = function(val) {
              const list = document.getElementById('smallPaySuggestions');
              if(!val) { list.classList.add('hidden'); return; }
@@ -1352,19 +1442,6 @@
             document.getElementById('smallPayInput').value = '';
             document.getElementById('smallPaySuggestions').classList.add('hidden');
             document.getElementById('smallPayResult').classList.add('hidden');
-        }
-
-        window.filterSmallPayByCity = function() {
-             const city = document.getElementById('smallPayCitySelect').value;
-             if(!city) return;
-             const stores = SMALL_PAYMENT_STORES_DB.filter(s => s.city.includes(city) || s.city === '全台');
-             // Just filtering memory list, real usage logic depends on user need (maybe just listing stores?)
-             // For now, let's auto-search if input is empty, or filter results
-             if(stores.length > 0 && !document.getElementById('smallPayInput').value) {
-                 const res = document.getElementById('smallPayResult');
-                 res.innerHTML = `<div class="bg-indigo-50 p-3 rounded-xl text-center text-sm text-indigo-600 font-bold">該縣市共有 ${stores.length} 間小額支付店家</div>`;
-                 res.classList.remove('hidden');
-             }
         }
         
         function checkSmallPay(name) {
