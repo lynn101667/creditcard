@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>毛爸毛媽的信用卡權益 V94</title>
+    <title>毛爸毛媽的信用卡權益 V95</title>
     
     <!-- PWA Settings -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -81,7 +81,7 @@
         
         /* Drag and Drop Style */
         .sortable-ghost { opacity: 0.4; background-color: #F1F5F9; }
-        .sortable-drag { cursor: grabbing; }
+        .sortable-drag { cursor: grabbing; background: white; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
     </style>
 </head>
 <body class="pb-24 text-slate-700">
@@ -198,7 +198,7 @@
                 <h3 class="font-bold text-lg text-slate-800">調整信用卡順序</h3>
                 <button onclick="document.getElementById('cardSortModal').classList.add('hidden')" class="p-1 hover:bg-slate-100 rounded-full"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button>
             </div>
-            <div class="p-2 bg-indigo-50 border-b border-indigo-100 text-center text-xs text-indigo-500 font-bold">💡 長按並拖曳即可調整順序</div>
+            <div class="p-2 bg-indigo-50 border-b border-indigo-100 text-center text-xs text-indigo-500 font-bold">💡 按住右側三條線即可拖曳</div>
             <div id="cardSortList" class="flex-1 overflow-y-auto p-2 space-y-1">
                 <!-- Items injected by JS -->
             </div>
@@ -968,6 +968,7 @@
             
             sortableInstance = new Sortable(el, {
                 animation: 150,
+                handle: '.drag-handle', // <--- Add this
                 ghostClass: 'sortable-ghost',
                 dragClass: 'sortable-drag',
                 onEnd: function (evt) {
@@ -991,12 +992,15 @@
                  const card = allCardsData.find(c => c.id === cardId);
                  if(!card) return;
                  const row = document.createElement('div');
-                 row.className = "flex justify-between items-center p-3 bg-white border border-slate-100 rounded-xl mb-2 cursor-grab active:cursor-grabbing shadow-sm";
+                 row.className = "flex justify-between items-center p-3 bg-white border border-slate-100 rounded-xl mb-2 shadow-sm";
                  row.setAttribute('data-id', card.id);
                  row.innerHTML = `
-                    <div class="flex items-center gap-3 overflow-hidden pointer-events-none">
-                        <span class="text-xs text-slate-300 font-mono w-4"><i data-lucide="grip-vertical" class="w-4 h-4"></i></span>
+                    <div class="flex items-center gap-3 overflow-hidden flex-1">
                         <div class="truncate"><span class="bank-badge ${card.color} scale-75 origin-left inline-block -mr-1">${card.bank}</span><span class="text-sm font-bold text-slate-700">${card.name}</span></div>
+                    </div>
+                    <!-- Right Grip Handle -->
+                    <div class="drag-handle p-3 text-slate-400 cursor-grab active:cursor-grabbing touch-none">
+                        <i data-lucide="grip-vertical" class="w-5 h-5"></i>
                     </div>
                  `;
                  listContainer.appendChild(row);
