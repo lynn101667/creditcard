@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>毛爸毛媽的信用卡權益 V95</title>
+    <title>毛爸毛媽的信用卡權益 V104 (Fix Delete & Edit)</title>
     
     <!-- PWA Settings -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,9 +18,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-    <!-- SortableJS for Drag and Drop -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-    <!-- Chart.js for Pie Chart -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;600;700&display=swap" rel="stylesheet">
@@ -319,20 +317,34 @@
 
         const getStorageKey = (key) => currentUser ? `cc_${key}_${currentUser}` : null;
 
+        // --- FIXED: INIT LOGIC ---
         function init() {
             loadSmallPayCsv(DEFAULT_SMALL_PAY_CSV_URL);
             
-            Papa.parse(DEFAULT_CSV_URL, {
-                download: true, header: true, skipEmptyLines: true,
-                complete: (results) => { allCardsData = processRawData(results.data); initDropdowns(); renderView(); },
-                error: () => { allCardsData = []; initDropdowns(); renderView(); }
-            });
-
             document.getElementById('txDate').valueAsDate = new Date();
             initCategoryDropdown();
             initCityDropdown();
 
-            // LOGIN CHECK
+            // FIXED: Move checkLoginAndRender inside the callback
+            Papa.parse(DEFAULT_CSV_URL, {
+                download: true, header: true, skipEmptyLines: true,
+                complete: (results) => { 
+                    allCardsData = processRawData(results.data); 
+                    initDropdowns(); 
+                    // Only check login after card data is loaded to prevent empty renders
+                    checkLoginAndRender();
+                },
+                error: () => { 
+                    console.error("CSV Loaded Failed");
+                    allCardsData = []; 
+                    initDropdowns(); 
+                    checkLoginAndRender();
+                }
+            });
+        }
+        
+        function checkLoginAndRender() {
+            currentUser = localStorage.getItem('cc_current_user'); // Refresh from local
             const app = document.getElementById('appContainer');
             const login = document.getElementById('loginScreen');
 
@@ -340,7 +352,7 @@
                 switchUser(currentUser);
                 app.classList.remove('hidden', 'opacity-0');
                 login.classList.add('hidden');
-                switchTab('manage');
+                if(currentView === 'manage') switchTab('manage'); else renderView();
             } else {
                 app.classList.add('hidden');
                 login.classList.remove('hidden');
@@ -396,8 +408,8 @@
             const btnLynn = document.getElementById('btnUserLynn');
             const btnAndy = document.getElementById('btnUserAndy');
             
-            btnLynn.className = user === 'Lynn' ? "py-3 text-sm font-bold rounded-xl border-2 border-pink-400 bg-pink-50 text-pink-600 transition-all flex flex-col items-center gap-1 shadow-sm" : "py-3 text-sm font-bold rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-pink-50 transition-all flex flex-col items-center gap-1 shadow-sm";
-            btnAndy.className = user === 'Andy' ? "py-3 text-sm font-bold rounded-xl border-2 border-blue-400 bg-blue-50 text-blue-600 transition-all flex flex-col items-center gap-1 shadow-sm" : "py-3 text-sm font-bold rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-blue-50 transition-all flex flex-col items-center gap-1 shadow-sm";
+            if(btnLynn) btnLynn.className = user === 'Lynn' ? "py-3 text-sm font-bold rounded-xl border-2 border-pink-400 bg-pink-50 text-pink-600 transition-all flex flex-col items-center gap-1 shadow-sm" : "py-3 text-sm font-bold rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-pink-50 transition-all flex flex-col items-center gap-1 shadow-sm";
+            if(btnAndy) btnAndy.className = user === 'Andy' ? "py-3 text-sm font-bold rounded-xl border-2 border-blue-400 bg-blue-50 text-blue-600 transition-all flex flex-col items-center gap-1 shadow-sm" : "py-3 text-sm font-bold rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-blue-50 transition-all flex flex-col items-center gap-1 shadow-sm";
 
             // Prune Old Data First
             pruneOldData();
@@ -408,7 +420,7 @@
             showToast(`已切換為 ${user}`);
         }
 
-        // --- CLEANUP DATA (6 MONTHS) ---
+        // --- FIXED: CLEANUP DATA (6 MONTHS) ---
         function pruneOldData() {
             if (!transactions || transactions.length === 0) return;
             const now = new Date();
@@ -416,7 +428,9 @@
             
             const originalCount = transactions.length;
             const validTransactions = transactions.filter(t => {
+                if (!t.date) return true; // Keep if date is missing to be safe
                 const tDate = new Date(t.date);
+                if (isNaN(tDate.getTime())) return true; // Keep invalid dates to prevent accidental deletion
                 return tDate >= cutoffDate;
             });
 
@@ -424,11 +438,6 @@
                 transactions = validTransactions;
                 localStorage.setItem(getStorageKey('transactions'), JSON.stringify(transactions));
                 console.log(`Pruned ${originalCount - validTransactions.length} old transactions.`);
-                // Trigger background cleanup on cloud? 
-                // For simplicity and speed, we just clean local view. 
-                // A full cloud cleanup would require a dedicated API endpoint which we want to avoid complexity here.
-                // But since we write back the full array on sync sometimes or handle adds, the cloud might still have old data.
-                // To keep it fast, we prioritize local speed.
             }
         }
 
@@ -552,10 +561,9 @@
                     end = new Date(year, month, billDay); 
                 } 
             } 
-            const offset = start.getTimezoneOffset() * 60000;
-            const startStr = new Date(start.getTime() - offset).toISOString().split('T')[0];
-            const endStr = new Date(end.getTime() - offset).toISOString().split('T')[0];
-            return { start: startStr, end: endStr }; 
+            // Use local date string construction to avoid timezone issues
+            const fmt = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            return { start: fmt(start), end: fmt(end) }; 
         }
 
         window.processRawData = function(data) { 
@@ -669,6 +677,7 @@
             } catch(e) { console.error(e); return { status: 'error', message: e.toString() }; } 
         }
 
+        // --- FIXED: ROBUST SYNC LOGIC & TYPE SAFETY ---
         window.syncWithCloud = async function(forceShowLoading = true) { 
             if(!API_URL) return; 
             
@@ -682,16 +691,70 @@
             try { 
                 const r = await fetch(API_URL + '?action=read'); 
                 const j = await r.json(); 
-                if(j.status === 'success' && j.data) { 
-                    transactions = j.data; 
-                    localStorage.setItem(getStorageKey('transactions'), JSON.stringify(transactions)); 
-                    // Prune after sync to ensure we don't re-add old stuff locally
-                    pruneOldData();
-                    renderView(); 
-                    if(forceShowLoading || !hasData) showToast('同步完成'); 
+                
+                if(j.status === 'success' && j.data && Array.isArray(j.data)) { 
+                    // Helper to fuzzy match keys (e.g., "Amount", "amount", "money")
+                    const getValue = (obj, keys) => {
+                        const foundKey = Object.keys(obj).find(k => keys.some(search => k.toLowerCase() === search.toLowerCase()));
+                        return foundKey ? obj[foundKey] : null;
+                    };
+
+                    const cloudTxs = j.data.map(tx => {
+                        let rawAmt = getValue(tx, ['amount', 'money', 'price', 'cost']);
+                        let rawDate = getValue(tx, ['date', 'time', 'day']);
+                        let rawCat = getValue(tx, ['category', 'type']);
+                        let rawItem = getValue(tx, ['item', 'desc', 'name', 'detail']);
+                        let rawNote = getValue(tx, ['note', 'memo']);
+                        let rawCard = getValue(tx, ['cardId', 'card']);
+                        let rawId = getValue(tx, ['id']);
+                        let rawTypes = getValue(tx, ['types']);
+
+                        let amt = parseFloat(rawAmt);
+                        if(isNaN(amt)) amt = 0;
+                        
+                        // Sanitize Date
+                        let d = String(rawDate || "").trim();
+                        d = d.replace(/\//g, '-').split('T')[0]; // 2024/01/01 -> 2024-01-01
+                        if(d.length < 8) d = ""; 
+
+                        // Sanitize Types
+                        let types = rawTypes;
+                        if (typeof types === 'string') {
+                             try { types = JSON.parse(types); } catch(e) { types = []; }
+                        }
+                        if (!Array.isArray(types)) types = [];
+                        
+                        return { 
+                            // FORCE STRING ID
+                            id: String(rawId || (Date.now().toString() + Math.random().toString(36).substr(2, 5))),
+                            cardId: rawCard || "",
+                            amount: amt, 
+                            date: d,
+                            category: rawCat || "📦 其他",
+                            item: rawItem || "",
+                            note: rawNote || "",
+                            types: types
+                        };
+                    });
+
+                    // Only overwrite if we found valid data OR if cloud explicitly returned empty array (new user)
+                    const validTxs = cloudTxs.filter(tx => tx.date && tx.amount >= 0 && tx.cardId);
+
+                    if (validTxs.length > 0) {
+                        transactions = validTxs;
+                        localStorage.setItem(getStorageKey('transactions'), JSON.stringify(transactions)); 
+                        pruneOldData(); 
+                        renderView(); 
+                        if(forceShowLoading || !hasData) showToast('同步完成');
+                    } else if (j.data.length > 0 && validTxs.length === 0) {
+                        console.warn("Sync Warning: Cloud data exists but parsing failed.", j.data[0]);
+                    } else {
+                        if(forceShowLoading) showToast('雲端無資料');
+                    }
                 } 
             } catch(e) { 
-                if(forceShowLoading) showToast('同步失敗'); 
+                console.error("Sync Failed", e);
+                if(forceShowLoading) showToast('同步失敗: 網路或格式錯誤'); 
             } finally { 
                 showLoading(false); 
                 document.getElementById('syncIndicator').classList.add('hidden');
@@ -810,23 +873,33 @@
                 const billDay = settings.billDay || defaultBillDay;
                 const { start, end } = getCycleRange({ cycleType, billDay }, new Date());
                 const cardTxs = transactions.filter(t => t.cardId === card.id && t.date >= start && t.date <= end);
+                
                 // Sort Txs by date desc
                 cardTxs.sort((a,b) => new Date(b.date) - new Date(a.date));
-                const total = cardTxs.reduce((sum, t) => sum + Number(t.amount), 0);
+                
+                // Calculate totals based on types
+                let totalSpent = 0;
+                let totalCap = 0; // For Reward Cap Bar
+                let totalMin = 0; // For Min Spend Bar
+
+                cardTxs.forEach(tx => {
+                    const amt = Number(tx.amount);
+                    totalSpent += amt; 
+                    const types = tx.types || [];
+                    if (types.includes('reward')) { totalCap += amt; }
+                    if (types.includes('general')) { totalMin += amt; }
+                });
+
                 const cap = settings.cap || card.defaultCap || 0;
                 const min = settings.min || card.defaultMin || 0;
-                return { ...card, total, cap, min, start, end, settings, billDay, cardTxs };
+                return { ...card, total: totalSpent, totalCap, totalMin, cap, min, start, end, settings, billDay, cardTxs };
             });
 
             // Sort: Active cards (total > 0) first, then by user order
             cardStats.sort((a, b) => {
                 const aActive = a.total > 0 ? 1 : 0;
                 const bActive = b.total > 0 ? 1 : 0;
-                
-                // If one is active and other isn't, active goes first
                 if (aActive !== bActive) return bActive - aActive;
-
-                // Otherwise use manual sort order
                 let idxA = cardSortOrder.indexOf(a.id);
                 let idxB = cardSortOrder.indexOf(b.id);
                 if(idxA === -1) idxA = 9999;
@@ -846,48 +919,24 @@
                 const el = document.createElement('div');
                 el.className = "bg-white rounded-2xl p-5 mb-4 shadow-sm border border-slate-100 fade-in";
                 
-                // Emoji for Min Spend
                 let nameHtml = card.name;
                 if (card.min > 0) nameHtml += ' <span title="有低消">💰</span>';
 
-                // Progress Bars
                 let barsHtml = '';
-                
-                // Cap Bar
                 if (card.cap > 0) {
-                    const capPct = Math.min((card.total / card.cap) * 100, 100);
+                    const capPct = Math.min((card.totalCap / card.cap) * 100, 100);
                     const capColor = capPct >= 90 ? 'bg-red-500' : 'bg-indigo-500';
-                    const capText = `${card.total.toLocaleString()} / ${card.cap.toLocaleString()}`;
-                    
-                    barsHtml += `<div class="mb-3">
-                        <div class="flex justify-between text-[10px] font-bold text-slate-400 mb-1">
-                            <span>回饋上限 (${Math.round(capPct)}%)</span>
-                            <span class="${capPct >= 90 ? 'text-red-500' : ''}">${capText}</span>
-                        </div>
-                        <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                            <div class="h-full ${capColor} transition-all duration-500" style="width:${capPct}%"></div>
-                        </div>
-                    </div>`;
+                    const capText = `${card.totalCap.toLocaleString()} / ${card.cap.toLocaleString()}`;
+                    barsHtml += `<div class="mb-3"><div class="flex justify-between text-[10px] font-bold text-slate-400 mb-1"><span>回饋上限 (${Math.round(capPct)}%)</span><span class="${capPct >= 90 ? 'text-red-500' : ''}">${capText}</span></div><div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden"><div class="h-full ${capColor} transition-all duration-500" style="width:${capPct}%"></div></div></div>`;
                 }
 
-                // Min Spend Bar
                 if (card.min > 0) {
-                    const minPct = Math.min((card.total / card.min) * 100, 100);
+                    const minPct = Math.min((card.totalMin / card.min) * 100, 100);
                     const minColor = minPct >= 100 ? 'bg-emerald-500' : 'bg-orange-400';
-                    const minText = minPct >= 100 ? '✅ 已達標' : `尚差 $${(card.min - card.total).toLocaleString()}`;
-
-                    barsHtml += `<div class="mb-2">
-                        <div class="flex justify-between text-[10px] font-bold text-slate-400 mb-1">
-                            <span>低消門檻 (${Math.round(minPct)}%)</span>
-                            <span class="${minPct >= 100 ? 'text-emerald-500' : 'text-orange-400'}">${minText}</span>
-                        </div>
-                        <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                            <div class="h-full ${minColor} transition-all duration-500" style="width:${minPct}%"></div>
-                        </div>
-                    </div>`;
+                    const minText = minPct >= 100 ? '✅ 已達標' : `尚差 $${(card.min - card.totalMin).toLocaleString()}`;
+                    barsHtml += `<div class="mb-2"><div class="flex justify-between text-[10px] font-bold text-slate-400 mb-1"><span>低消門檻 (${Math.round(minPct)}%)</span><span class="${minPct >= 100 ? 'text-emerald-500' : 'text-orange-400'}">${minText}</span></div><div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden"><div class="h-full ${minColor} transition-all duration-500" style="width:${minPct}%"></div></div></div>`;
                 }
                 
-                // Transaction List (Inline)
                 let txListHtml = '';
                 if(card.cardTxs.length > 0) {
                     txListHtml = `<div class="mt-4 pt-3 border-t border-slate-50 space-y-2">`;
@@ -914,18 +963,13 @@
                             <span class="bank-badge ${card.color}">${card.bank}</span>
                             <div><h3 class="font-bold text-slate-700 text-sm">${nameHtml}</h3><p class="text-[10px] text-slate-400 mt-0.5">結帳日: 每月 ${card.billDay} 號</p></div>
                         </div>
-                        <div class="text-right">
-                            <div class="text-xl font-bold text-slate-800">$${card.total.toLocaleString()}</div>
-                            <div class="text-[10px] text-slate-400">本期累積</div>
-                        </div>
+                        <div class="text-right"><div class="text-xl font-bold text-slate-800">$${card.total.toLocaleString()}</div><div class="text-[10px] text-slate-400">本期累積</div></div>
                     </div>
                     ${barsHtml}
                     ${txListHtml}
                     <div class="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-50">
                         <button onclick="openTransactionModal(); document.getElementById('txCardSelect').value='${card.id}';" class="py-2 rounded-xl bg-indigo-50 text-indigo-600 text-xs font-bold hover:bg-indigo-100 transition-colors">記一筆</button>
-                        <div class="flex gap-2">
-                             <button onclick="openSettingsModal('${card.id}')" class="flex-1 py-2 rounded-xl bg-slate-50 text-slate-500 text-xs font-bold hover:bg-slate-100 transition-colors">設定</button>
-                        </div>
+                        <div class="flex gap-2"><button onclick="openSettingsModal('${card.id}')" class="flex-1 py-2 rounded-xl bg-slate-50 text-slate-500 text-xs font-bold hover:bg-slate-100 transition-colors">設定</button></div>
                     </div>
                 `;
                 container.appendChild(el);
@@ -1008,6 +1052,7 @@
              lucide.createIcons();
         }
 
+        // --- FIXED: OPEN TRANSACTION MODAL WITH TYPE SAFETY ---
         window.openTransactionModal = function(existingTxId) {
             const modal = document.getElementById('transactionModal');
             if(!modal) return; 
@@ -1039,7 +1084,8 @@
             if (existingTxId) {
                 editingTransactionId = existingTxId;
                 if(title) title.innerText = "修改消費紀錄";
-                const tx = transactions.find(t => t.id === existingTxId);
+                // FIXED: Use String comparison for ID
+                const tx = transactions.find(t => String(t.id) === String(existingTxId));
                 if (tx) {
                     select.value = tx.cardId;
                     document.getElementById('txAmount').value = tx.amount;
@@ -1072,6 +1118,7 @@
         window.closeTransactionModal = function() { document.getElementById('transactionModal').classList.add('hidden'); }
         window.openDeleteConfirm = function() { document.getElementById('deleteConfirmModal').classList.remove('hidden'); }
         
+        // --- FIXED: SAVE TRANSACTION WITH TYPE SAFETY ---
         window.saveTransaction = async function() {
             if (!currentUser) return alert('請先選擇使用者身分 (設定 > 選擇身分)');
             const cardId = document.getElementById('txCardSelect').value;
@@ -1086,31 +1133,32 @@
 
             if (!cardId || isNaN(amount) || amount <= 0 || !date) { alert(`請記得填寫必要欄位喔`); return; }
             
-            // Optimistic UI Update: Don't block screen
+            // FIXED: Ensure timestamp/id logic is robust
             let txData = { cardId, amount, date, category, item, note, types, timestamp: Date.now() };
             let action = 'add'; 
 
             if (editingTransactionId) {
                 action = 'edit';
-                const index = transactions.findIndex(t => t.id === editingTransactionId);
-                if (index !== -1) { txData.id = editingTransactionId; transactions[index] = txData; }
+                // FIXED: Use String comparison
+                const index = transactions.findIndex(t => String(t.id) === String(editingTransactionId));
+                if (index !== -1) { 
+                    txData.id = editingTransactionId; 
+                    transactions[index] = txData; 
+                }
             } else {
                 action = 'add';
-                txData.id = Date.now().toString();
+                // FIXED: Robust ID generation (String)
+                txData.id = Date.now().toString() + Math.random().toString(36).substr(2, 5);
                 transactions.push(txData);
             }
 
-            // 1. Save Local
             localStorage.setItem(getStorageKey('transactions'), JSON.stringify(transactions));
-            // 2. Update UI
             renderView();
             closeTransactionModal();
-            // 3. Show non-blocking toast
             showToast('🔄 雲端儲存中...', 2000);
             
-            // 4. Send to Cloud in background
             try {
-                const result = await postToCloud({ action: action, item: txData });
+                const result = await postToCloud({ action: action, item: txData, id: txData.id });
                 if (result.status === 'success') {
                     showToast('✅ 雲端已同步');
                 } else {
@@ -1121,13 +1169,14 @@
             }
         }
 
+        // --- FIXED: DELETE TRANSACTION WITH TYPE SAFETY ---
         window.executeDelete = async function() {
             if (!currentUser) return;
             document.getElementById('deleteConfirmModal').classList.add('hidden'); 
             
-            // Optimistic UI Update
             const txId = editingTransactionId;
-            transactions = transactions.filter(t => t.id !== txId);
+            // FIXED: Use String comparison for filtering
+            transactions = transactions.filter(t => String(t.id) !== String(txId));
             localStorage.setItem(getStorageKey('transactions'), JSON.stringify(transactions));
             
             renderView();
@@ -1148,22 +1197,22 @@
         }
         
         // --- HISTORY FUNCTIONS ---
+        // V101: Updated History Function
         window.openHistoryModal = function() {
             document.getElementById('historyModal').classList.remove('hidden');
             
-            // Populate Month Select
             const monthSelect = document.getElementById('historyMonthSelect');
             monthSelect.innerHTML = '';
             
-            // Extract unique months from transactions
             const months = new Set();
             transactions.forEach(tx => {
-                if(tx.date) months.add(tx.date.substring(0, 7)); // YYYY-MM
+                if(tx.date && typeof tx.date === 'string' && tx.date.length >= 7) {
+                    months.add(tx.date.substring(0, 7)); // YYYY-MM
+                }
             });
             
             const sortedMonths = Array.from(months).sort().reverse();
             if(sortedMonths.length === 0) {
-                // Default to current month if no data
                 const now = new Date();
                 const m = now.toISOString().substring(0, 7);
                 sortedMonths.push(m);
@@ -1176,7 +1225,6 @@
                 monthSelect.appendChild(opt);
             });
             
-            // Select first (latest) month
             if(sortedMonths.length > 0) monthSelect.value = sortedMonths[0];
             
             renderHistoryMonth();
@@ -1187,7 +1235,7 @@
             const container = document.getElementById('historyMonthList');
             container.innerHTML = '';
             
-            let monthTxs = transactions.filter(tx => tx.date.startsWith(selectedMonth));
+            let monthTxs = transactions.filter(tx => tx.date && tx.date.startsWith(selectedMonth));
             if(manageCardFilter) monthTxs = monthTxs.filter(t => t.cardId === manageCardFilter);
             
             monthTxs.sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1195,7 +1243,6 @@
             const total = monthTxs.reduce((acc, t) => acc + Number(t.amount), 0);
             document.getElementById('historyMonthTotal').innerText = `$${total.toLocaleString()}`;
 
-            // Render List
             if(monthTxs.length === 0) {
                 container.innerHTML = '<div class="text-center py-10 text-slate-400 text-sm">本月無消費紀錄</div>';
             } else {
@@ -1204,11 +1251,15 @@
                     const div = document.createElement('div');
                     div.className = "flex justify-between items-center p-3 bg-slate-50 border border-slate-100 rounded-xl tx-row";
                     div.onclick = () => openTransactionModal(tx.id);
+                    
+                    const catStr = tx.category || "📦 其他";
+                    const icon = catStr.split(' ')[0] || "📦";
+
                     div.innerHTML = `
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-sm shadow-sm">${tx.category.split(' ')[0]}</div>
+                            <div class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-sm shadow-sm">${icon}</div>
                             <div>
-                                <div class="flex items-center gap-2"><h4 class="font-bold text-slate-700 text-xs">${tx.item || tx.category}</h4><span class="text-[9px] text-slate-400 bg-white px-1 rounded border border-slate-100">${card.name}</span></div>
+                                <div class="flex items-center gap-2"><h4 class="font-bold text-slate-700 text-xs">${tx.item || tx.category || "其他"}</h4><span class="text-[9px] text-slate-400 bg-white px-1 rounded border border-slate-100">${card.name}</span></div>
                                 <p class="text-[9px] text-slate-400 mt-0.5">${tx.date} ${tx.note ? '· '+tx.note : ''}</p>
                             </div>
                         </div>
@@ -1217,25 +1268,22 @@
                     container.appendChild(div);
                 });
             }
-
-            // Render Chart
             renderPieChart(monthTxs);
         }
 
         window.renderPieChart = function(txs) {
             const ctx = document.getElementById('historyPieChart').getContext('2d');
             
-            // Aggregate by category
             const catTotals = {};
             txs.forEach(tx => {
-                const cat = tx.category.split(' ')[1] || tx.category; // Remove emoji if present
+                const catStr = tx.category || "📦 其他";
+                const cat = catStr.includes(' ') ? catStr.split(' ')[1] : catStr; 
                 catTotals[cat] = (catTotals[cat] || 0) + Number(tx.amount);
             });
 
             const labels = Object.keys(catTotals);
             const data = Object.values(catTotals);
             
-            // Colors (Pastel)
             const colors = [
                 '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', 
                 '#C9CBCF', '#E7E9ED', '#71B37C', '#EC932F', '#52B3D9'
@@ -1246,7 +1294,6 @@
             }
 
             if (data.length === 0) {
-                // Show empty chart placeholder or just clear
                 return;
             }
 
