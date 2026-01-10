@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>毛爸毛媽的信用卡權益 V110 (Full Fix)</title>
+    <title>毛爸毛媽的信用卡權益 V111 (Timezone Fix)</title>
     
     <!-- PWA Settings -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -719,15 +719,24 @@
                         let amt = parseFloat(rawAmt);
                         if(isNaN(amt)) amt = 0;
                         
-                        // Sanitize Date
-                        let d = String(rawDate || "").trim();
-                        d = d.replace(/\//g, '-').split('T')[0]; // 2024/01/01 -> 2024-01-01
-                        if(d.length < 8) d = ""; 
-                        
-                        // Sanitize Settle Date
-                        let sd = String(rawSettleDate || "").trim();
-                        sd = sd.replace(/\//g, '-').split('T')[0];
-                        if(sd.length < 8) sd = "";
+                        // --- V111 Fix: Smart Date Parsing ---
+                        const parseDateString = (str) => {
+                            if (!str) return "";
+                            str = String(str).trim();
+                            // If it looks like a full ISO string (e.g., 2024-01-08T16:00:00.000Z), assume it might be JSON date
+                            if (str.includes('T') && str.endsWith('Z')) {
+                                const dObj = new Date(str);
+                                // Convert to Taiwan time (UTC+8) manually to get YYYY-MM-DD
+                                // Because dObj is UTC, adding 8 hours (28800000ms) gets us Taiwan time
+                                const taiwanTime = new Date(dObj.getTime() + 28800000);
+                                return taiwanTime.toISOString().split('T')[0];
+                            }
+                            // Standard fallback
+                            return str.replace(/\//g, '-').split('T')[0];
+                        };
+
+                        let d = parseDateString(rawDate);
+                        let sd = parseDateString(rawSettleDate);
 
                         // Sanitize Types
                         let types = rawTypes;
