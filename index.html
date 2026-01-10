@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>毛爸毛媽的信用卡權益 V104 (Fix Delete & Edit)</title>
+    <title>毛爸毛媽的信用卡權益 V110 (Full Fix)</title>
     
     <!-- PWA Settings -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -222,15 +222,19 @@
     </div>
 
     <div id="smallPayDbModal" class="fixed inset-0 bg-slate-900/60 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in"><h3 class="font-bold text-lg mb-1 text-slate-800 serif-font">匯入小額支付完整名單</h3><p class="text-xs text-slate-400 mb-4">貼上 CSV 網址</p><input type="text" id="smallPayCsvUrl" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 outline-none mb-2" placeholder="https://docs.google.com/..."><div class="flex gap-2"><button onclick="document.getElementById('smallPayDbModal').classList.add('hidden')" class="flex-1 py-2 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">取消</button><button onclick="saveSmallPayDb()" class="flex-1 py-2 rounded-xl bg-indigo-600 text-white font-bold shadow-md text-sm">匯入</button></div></div></div>
-    <div id="deleteConfirmModal" class="fixed inset-0 bg-slate-900/60 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in transform transition-all scale-100"><div class="flex flex-col items-center text-center mb-4"><div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-3"><i data-lucide="trash-2" class="w-6 h-6 text-red-500"></i></div><h3 class="font-bold text-lg text-slate-800">確定要刪除嗎？</h3><p class="text-xs text-slate-500 mt-1">刪除後將無法復原。</p></div><div class="flex gap-3"><button onclick="document.getElementById('deleteConfirmModal').classList.add('hidden')" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold text-sm">取消</button><button onclick="executeDelete()" class="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold shadow-md text-sm">確認刪除</button></div></div></div>
+    <div id="deleteConfirmModal" class="fixed inset-0 bg-slate-900/60 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in transform transition-all scale-100"><div class="flex flex-col items-center text-center mb-4"><div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-3"><i data-lucide="trash-2" class="w-6 h-6 text-red-500"></i></div><h3 class="font-bold text-lg text-slate-800">確定要刪除嗎？</h3><p class="text-xs text-slate-500 mt-1">刪除後將無法復原。</p></div><div class="flex gap-3"><button onclick="document.getElementById('deleteConfirmModal').classList.add('hidden')" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold text-sm">取消</button><button onclick="executeDelete()" class="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold shadow-md text-sm">確認刪除</button></div></div></div>
     
-    <!-- Transaction Modal -->
-    <div id="transactionModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-end sm:items-center justify-center backdrop-blur-sm transition-opacity">
+    <!-- Transaction Modal (FIXED Z-INDEX to z-[60] to show ABOVE History Modal z-50) -->
+    <div id="transactionModal" class="fixed inset-0 bg-slate-900/60 z-[60] hidden flex items-end sm:items-center justify-center backdrop-blur-sm transition-opacity">
         <div class="bg-white w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl animate-in slide-in-from-bottom-10 duration-300 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold text-slate-800 serif-font" id="txModalTitle">記一筆消費</h3><button onclick="closeTransactionModal()" class="bg-slate-100 p-2 rounded-full text-slate-500 hover:bg-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button></div>
             <div class="space-y-4">
                 <div><label class="text-xs font-bold text-slate-400 mb-1.5 block">選擇卡片 <span class="text-red-400">*</span></label><select id="txCardSelect" class="w-full bg-slate-50 border-none rounded-xl p-3.5 text-slate-700 outline-none font-bold text-sm focus:ring-2 focus:ring-indigo-200"></select></div>
-                <div class="flex gap-3"><div class="flex-1"><label class="text-xs font-bold text-slate-400 mb-1.5 block">金額 <span class="text-red-400">*</span></label><input type="number" id="txAmount" class="w-full bg-slate-50 border-none rounded-xl p-3.5 text-xl font-bold text-slate-800 outline-none focus:ring-2 focus:ring-indigo-200" placeholder="$0"></div><div class="w-1/3"><label class="text-xs font-bold text-slate-400 mb-1.5 block">日期 <span class="text-red-400">*</span></label><input type="date" id="txDate" class="w-full bg-slate-50 border-none rounded-xl p-3.5 text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-indigo-200"></div></div>
+                <div><label class="text-xs font-bold text-slate-400 mb-1.5 block">金額 <span class="text-red-400">*</span></label><input type="number" id="txAmount" class="w-full bg-slate-50 border-none rounded-xl p-3.5 text-xl font-bold text-slate-800 outline-none focus:ring-2 focus:ring-indigo-200" placeholder="$0"></div>
+                <div class="flex gap-3">
+                    <div class="flex-1"><label class="text-xs font-bold text-slate-400 mb-1.5 block">消費日期 <span class="text-red-400">*</span></label><input type="date" id="txDate" class="w-full bg-slate-50 border-none rounded-xl p-3.5 text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-indigo-200"></div>
+                    <div class="flex-1"><label class="text-xs font-bold text-slate-400 mb-1.5 block">請款日期 <span class="text-indigo-400 text-[10px]">(選填)</span></label><input type="date" id="txSettleDate" class="w-full bg-slate-50 border-none rounded-xl p-3.5 text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-indigo-200"></div>
+                </div>
                 <div><label class="text-xs font-bold text-slate-400 mb-1.5 block">消費類別 <span class="text-red-400">*</span></label><div class="relative"><select id="txCategory" class="w-full bg-slate-50 border-none rounded-xl p-3.5 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-200"></select></div></div>
                 <div><label class="text-xs font-bold text-slate-400 mb-1.5 block">消費細項 <span class="text-indigo-400 text-[10px]">(選填)</span></label><input type="text" id="txItem" class="w-full bg-slate-50 border-none rounded-xl p-3.5 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-indigo-200" placeholder="例如：麥當勞、全聯..."></div>
                 <div><label class="text-xs font-bold text-slate-400 mb-1.5 block">消費類型</label><div class="flex gap-3"><label class="flex-1 cursor-pointer custom-checkbox"><input type="checkbox" id="checkReward" value="reward" class="hidden" checked><div class="border border-slate-200 rounded-xl py-3 text-center text-xs font-bold text-slate-500 transition-colors select-none">指定回饋</div></label><label class="flex-1 cursor-pointer custom-checkbox"><input type="checkbox" id="checkGeneral" value="general" class="hidden"><div class="border border-slate-200 rounded-xl py-3 text-center text-xs font-bold text-slate-500 transition-colors select-none">一般/低消</div></label></div></div>
@@ -553,6 +557,8 @@
                 end = new Date(year, month + 1, 0); 
             } else { 
                 const billDay = parseInt(settings.billDay) || 1; 
+                // Fix logic: If today > billDay, we are in the cycle that ends next month.
+                // If today <= billDay, we are in the cycle that started last month.
                 if (day > billDay) { 
                     start = new Date(year, month, billDay + 1); 
                     end = new Date(year, month + 1, billDay); 
@@ -702,6 +708,7 @@
                     const cloudTxs = j.data.map(tx => {
                         let rawAmt = getValue(tx, ['amount', 'money', 'price', 'cost']);
                         let rawDate = getValue(tx, ['date', 'time', 'day']);
+                        let rawSettleDate = getValue(tx, ['settleDate', 'settlementDate', 'billDate']); // New Field
                         let rawCat = getValue(tx, ['category', 'type']);
                         let rawItem = getValue(tx, ['item', 'desc', 'name', 'detail']);
                         let rawNote = getValue(tx, ['note', 'memo']);
@@ -716,6 +723,11 @@
                         let d = String(rawDate || "").trim();
                         d = d.replace(/\//g, '-').split('T')[0]; // 2024/01/01 -> 2024-01-01
                         if(d.length < 8) d = ""; 
+                        
+                        // Sanitize Settle Date
+                        let sd = String(rawSettleDate || "").trim();
+                        sd = sd.replace(/\//g, '-').split('T')[0];
+                        if(sd.length < 8) sd = "";
 
                         // Sanitize Types
                         let types = rawTypes;
@@ -730,6 +742,7 @@
                             cardId: rawCard || "",
                             amount: amt, 
                             date: d,
+                            settleDate: sd,
                             category: rawCat || "📦 其他",
                             item: rawItem || "",
                             note: rawNote || "",
@@ -866,16 +879,42 @@
         window.renderManageView = function(container) {
             const cardStats = allCardsData.map(card => {
                 const settings = cardSettings[card.id] || {};
-                const cycleType = settings.cycleType || 'month';
-                let defaultBillDay = 1;
-                if(currentUser === 'Lynn' && card.lynnBillDay) defaultBillDay = card.lynnBillDay;
-                if(currentUser === 'Andy' && card.andyBillDay) defaultBillDay = card.andyBillDay;
-                const billDay = settings.billDay || defaultBillDay;
-                const { start, end } = getCycleRange({ cycleType, billDay }, new Date());
-                const cardTxs = transactions.filter(t => t.cardId === card.id && t.date >= start && t.date <= end);
                 
-                // Sort Txs by date desc
-                cardTxs.sort((a,b) => new Date(b.date) - new Date(a.date));
+                // --- FIX START: Determine default Bill Day and Cycle Type correctly ---
+                let defaultBillDay = 1;
+                let hasCsvBillDay = false;
+
+                if(currentUser === 'Lynn' && card.lynnBillDay) {
+                    defaultBillDay = card.lynnBillDay;
+                    hasCsvBillDay = true;
+                }
+                if(currentUser === 'Andy' && card.andyBillDay) {
+                    defaultBillDay = card.andyBillDay;
+                    hasCsvBillDay = true;
+                }
+
+                let cycleType = settings.cycleType;
+                if (!cycleType) {
+                    cycleType = hasCsvBillDay ? 'bill' : 'month';
+                }
+                
+                const billDay = settings.billDay || defaultBillDay;
+                // --- FIX END ---
+
+                const { start, end } = getCycleRange({ cycleType, billDay }, new Date());
+                
+                // --- FILTER LOGIC UPDATE: Use SettleDate if available ---
+                const cardTxs = transactions.filter(t => {
+                    const effectiveDate = t.settleDate || t.date; // PRIORITY: Settle Date > Transaction Date
+                    return t.cardId === card.id && effectiveDate >= start && effectiveDate <= end;
+                });
+                
+                // Sort Txs by effective date desc
+                cardTxs.sort((a,b) => {
+                    const dateA = new Date(a.settleDate || a.date);
+                    const dateB = new Date(b.settleDate || b.date);
+                    return dateB - dateA;
+                });
                 
                 // Calculate totals based on types
                 let totalSpent = 0;
@@ -892,7 +931,8 @@
 
                 const cap = settings.cap || card.defaultCap || 0;
                 const min = settings.min || card.defaultMin || 0;
-                return { ...card, total: totalSpent, totalCap, totalMin, cap, min, start, end, settings, billDay, cardTxs };
+                // Pass cycleType so UI can verify what mode is used
+                return { ...card, total: totalSpent, totalCap, totalMin, cap, min, start, end, settings, billDay, cycleType, cardTxs };
             });
 
             // Sort: Active cards (total > 0) first, then by user order
@@ -941,10 +981,13 @@
                 if(card.cardTxs.length > 0) {
                     txListHtml = `<div class="mt-4 pt-3 border-t border-slate-50 space-y-2">`;
                     card.cardTxs.forEach(tx => {
+                        // Display Settle Date if exists
+                        const dateDisplay = tx.settleDate ? `<span class="text-indigo-500" title="請款日">${tx.settleDate.slice(5)}</span>` : tx.date.slice(5);
+                        
                         txListHtml += `
                             <div class="flex justify-between items-center text-xs group">
                                 <div class="flex items-center gap-2 overflow-hidden">
-                                    <span class="text-slate-400 font-mono flex-shrink-0">${tx.date.slice(5)}</span>
+                                    <span class="text-slate-400 font-mono flex-shrink-0">${dateDisplay}</span>
                                     <span class="text-slate-700 truncate font-bold">${tx.item || tx.category}</span>
                                 </div>
                                 <div class="flex items-center gap-2 flex-shrink-0">
@@ -957,11 +1000,17 @@
                     txListHtml += `</div>`;
                 }
 
+                // Add Bill Day Info
+                let billInfo = '依日曆月計算';
+                if (card.cycleType === 'bill') {
+                    billInfo = `結帳日: 每月 ${card.billDay} 號 (隔日重置)`;
+                }
+
                 el.innerHTML = `
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex items-center gap-3">
                             <span class="bank-badge ${card.color}">${card.bank}</span>
-                            <div><h3 class="font-bold text-slate-700 text-sm">${nameHtml}</h3><p class="text-[10px] text-slate-400 mt-0.5">結帳日: 每月 ${card.billDay} 號</p></div>
+                            <div><h3 class="font-bold text-slate-700 text-sm">${nameHtml}</h3><p class="text-[10px] text-slate-400 mt-0.5">${billInfo}</p></div>
                         </div>
                         <div class="text-right"><div class="text-xl font-bold text-slate-800">$${card.total.toLocaleString()}</div><div class="text-[10px] text-slate-400">本期累積</div></div>
                     </div>
@@ -1090,6 +1139,7 @@
                     select.value = tx.cardId;
                     document.getElementById('txAmount').value = tx.amount;
                     document.getElementById('txDate').value = tx.date;
+                    document.getElementById('txSettleDate').value = tx.settleDate || ''; // Settle Date
                     document.getElementById('txCategory').value = tx.category || "🍽️ 餐飲";
                     document.getElementById('txItem').value = tx.item || "";
                     document.getElementById('txNote').value = tx.note || "";
@@ -1104,6 +1154,7 @@
                 if(title) title.innerText = "記一筆消費";
                 document.getElementById('txAmount').value = '';
                 document.getElementById('txDate').valueAsDate = new Date();
+                document.getElementById('txSettleDate').value = ''; // Reset
                 document.getElementById('txCategory').value = "🍽️ 餐飲";
                 document.getElementById('txItem').value = '';
                 document.getElementById('txNote').value = '';
@@ -1124,6 +1175,7 @@
             const cardId = document.getElementById('txCardSelect').value;
             const amount = parseFloat(document.getElementById('txAmount').value);
             const date = document.getElementById('txDate').value;
+            const settleDate = document.getElementById('txSettleDate').value; // Get Settle Date
             const category = document.getElementById('txCategory').value;
             const item = document.getElementById('txItem').value; 
             const note = document.getElementById('txNote').value;
@@ -1134,7 +1186,7 @@
             if (!cardId || isNaN(amount) || amount <= 0 || !date) { alert(`請記得填寫必要欄位喔`); return; }
             
             // FIXED: Ensure timestamp/id logic is robust
-            let txData = { cardId, amount, date, category, item, note, types, timestamp: Date.now() };
+            let txData = { cardId, amount, date, settleDate, category, item, note, types, timestamp: Date.now() };
             let action = 'add'; 
 
             if (editingTransactionId) {
@@ -1154,6 +1206,10 @@
 
             localStorage.setItem(getStorageKey('transactions'), JSON.stringify(transactions));
             renderView();
+            // REFRESH HISTORY IF OPEN
+            if(!document.getElementById('historyModal').classList.contains('hidden')) {
+                renderHistoryMonth(); 
+            }
             closeTransactionModal();
             showToast('🔄 雲端儲存中...', 2000);
             
@@ -1180,8 +1236,11 @@
             localStorage.setItem(getStorageKey('transactions'), JSON.stringify(transactions));
             
             renderView();
+            // REFRESH HISTORY IF OPEN
+            if(!document.getElementById('historyModal').classList.contains('hidden')) {
+                renderHistoryMonth(); 
+            }
             closeTransactionModal();
-            if(!document.getElementById('historyModal').classList.contains('hidden')) window.openHistoryModal();
             showToast('🗑️ 已刪除 (同步中...)');
 
             try {
@@ -1206,8 +1265,9 @@
             
             const months = new Set();
             transactions.forEach(tx => {
-                if(tx.date && typeof tx.date === 'string' && tx.date.length >= 7) {
-                    months.add(tx.date.substring(0, 7)); // YYYY-MM
+                const viewDate = tx.date;
+                if(viewDate && typeof viewDate === 'string' && viewDate.length >= 7) {
+                    months.add(viewDate.substring(0, 7)); // YYYY-MM
                 }
             });
             
@@ -1248,27 +1308,64 @@
             } else {
                 monthTxs.forEach(tx => {
                     const card = allCardsData.find(c => c.id === tx.cardId) || { name: '未知卡片', bank: '未知' };
-                    const div = document.createElement('div');
-                    div.className = "flex justify-between items-center p-3 bg-slate-50 border border-slate-100 rounded-xl tx-row";
-                    div.onclick = () => openTransactionModal(tx.id);
+                    
+                    // --- V109 FIX START: PURE DOM CREATION TO ENSURE EVENTS FIRE ---
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = "flex justify-between items-center p-3 bg-slate-50 border border-slate-100 rounded-xl tx-row relative group";
+                    
+                    // Left Side: Content
+                    const leftDiv = document.createElement('div');
+                    leftDiv.className = "flex items-center gap-3 overflow-hidden flex-1 cursor-pointer";
                     
                     const catStr = tx.category || "📦 其他";
                     const icon = catStr.split(' ')[0] || "📦";
+                    const settleHint = tx.settleDate ? `<span class="text-indigo-500 font-bold ml-1 text-[10px] bg-indigo-50 px-1 rounded">請款: ${tx.settleDate.slice(5)}</span>` : '';
 
-                    div.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-sm shadow-sm">${icon}</div>
-                            <div>
-                                <div class="flex items-center gap-2"><h4 class="font-bold text-slate-700 text-xs">${tx.item || tx.category || "其他"}</h4><span class="text-[9px] text-slate-400 bg-white px-1 rounded border border-slate-100">${card.name}</span></div>
-                                <p class="text-[9px] text-slate-400 mt-0.5">${tx.date} ${tx.note ? '· '+tx.note : ''}</p>
-                            </div>
+                    leftDiv.innerHTML = `
+                        <div class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-sm shadow-sm flex-shrink-0">${icon}</div>
+                        <div class="overflow-hidden">
+                            <div class="flex items-center gap-2"><h4 class="font-bold text-slate-700 text-xs truncate">${tx.item || tx.category || "其他"}</h4><span class="text-[9px] text-slate-400 bg-white px-1 rounded border border-slate-100 whitespace-nowrap">${card.name}</span></div>
+                            <p class="text-[9px] text-slate-400 mt-0.5 truncate">${tx.date} ${settleHint} ${tx.note ? '· '+tx.note : ''}</p>
                         </div>
-                        <span class="font-bold text-slate-700 text-sm">$${Number(tx.amount).toLocaleString()}</span>
                     `;
-                    container.appendChild(div);
+                    // Click handler for left side (Edit)
+                    leftDiv.addEventListener('click', () => openTransactionModal(tx.id));
+
+                    // Right Side: Amount + Button
+                    const rightDiv = document.createElement('div');
+                    rightDiv.className = "flex items-center gap-3 flex-shrink-0 ml-2";
+                    
+                    const amountSpan = document.createElement('span');
+                    amountSpan.className = "font-bold text-slate-700 text-sm";
+                    amountSpan.innerText = `$${Number(tx.amount).toLocaleString()}`;
+                    
+                    // THE BUTTON (Created via DOM to guarantee event binding)
+                    const editBtn = document.createElement('button');
+                    editBtn.className = "w-7 h-7 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-400 shadow-sm hover:text-indigo-600 hover:border-indigo-200 active:scale-95 transition-all";
+                    editBtn.innerHTML = `<i data-lucide="pencil" class="w-3.5 h-3.5"></i>`;
+                    
+                    // Click handler for button (Stop Propagation + Edit)
+                    editBtn.addEventListener('click', (e) => {
+                        e.stopPropagation(); // Stop bubbling to row
+                        openTransactionModal(tx.id);
+                    });
+
+                    // Assemble
+                    rightDiv.appendChild(amountSpan);
+                    rightDiv.appendChild(editBtn);
+                    
+                    rowDiv.appendChild(leftDiv);
+                    rowDiv.appendChild(rightDiv);
+                    
+                    // Optional: Row click fallback (though leftDiv covers most)
+                    rowDiv.addEventListener('click', () => openTransactionModal(tx.id));
+
+                    container.appendChild(rowDiv);
+                    // --- V109 FIX END ---
                 });
             }
             renderPieChart(monthTxs);
+            lucide.createIcons(); // Refresh icons
         }
 
         window.renderPieChart = function(txs) {
@@ -1340,12 +1437,20 @@
             document.getElementById('settingCap').value = settings.cap || card.defaultCap || '';
             document.getElementById('settingMin').value = settings.min || card.defaultMin || '';
             document.getElementById('settingsModal').classList.remove('hidden');
-            setCycleMode(settings.cycleType || 'month');
             
+            // --- FIX START: Show correct default in modal ---
             let defaultBillDay = 1;
-            if(currentUser === 'Lynn' && card.lynnBillDay) defaultBillDay = card.lynnBillDay;
-            if(currentUser === 'Andy' && card.andyBillDay) defaultBillDay = card.andyBillDay;
+            let hasCsvBillDay = false;
+            if(currentUser === 'Lynn' && card.lynnBillDay) { defaultBillDay = card.lynnBillDay; hasCsvBillDay = true; }
+            if(currentUser === 'Andy' && card.andyBillDay) { defaultBillDay = card.andyBillDay; hasCsvBillDay = true; }
+
+            let mode = settings.cycleType;
+            if (!mode) {
+                mode = hasCsvBillDay ? 'bill' : 'month';
+            }
+            setCycleMode(mode);
             document.getElementById('settingBillDay').value = settings.billDay || defaultBillDay;
+            // --- FIX END ---
         }
 
         window.setCycleMode = function(mode) {
