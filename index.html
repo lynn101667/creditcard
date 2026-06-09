@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>毛爸毛媽的信用卡權益 V111 (Timezone Fix)</title>
+    <title>毛爸毛媽的信用卡權益 V113 (History Filters & Static Cycles)</title>
     
     <!-- PWA Settings -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -154,7 +154,7 @@
                     <div class="flex gap-2">
                         <div class="relative flex-1"><select id="manageCardFilter" class="w-full bg-white/90 border border-indigo-100 rounded-xl py-2.5 pl-3 pr-8 text-xs font-bold text-slate-600 outline-none shadow-sm focus:ring-2 focus:ring-indigo-200"><option value="">💳 所有信用卡</option></select></div>
                         <button onclick="openCardSortModal()" class="flex-none w-11 h-11 bg-white border border-indigo-50 text-indigo-500 rounded-xl shadow-sm flex items-center justify-center active:scale-95 transition-transform hover:bg-indigo-50"><i data-lucide="list-ordered" class="w-5 h-5"></i></button>
-                        <button onclick="window.openHistoryModal()" class="flex-none px-4 py-2.5 bg-indigo-500 text-white rounded-xl shadow-md text-xs font-bold flex items-center gap-1 active:scale-95 transition-transform hover:bg-indigo-600"><i data-lucide="receipt" class="w-4 h-4"></i> 歷史帳本</button>
+                        <button onclick="window.openHistoryModal()" class="flex-none px-4 py-2.5 bg-indigo-500 text-white rounded-xl shadow-md text-xs font-bold flex items-center gap-1 active:scale-95 transition-transform hover:bg-indigo-600"><i data-lucide="receipt" class="w-4 h-4"></i> 歷史總覽</button>
                     </div>
                 </div>
                 <div id="smallPayControls" class="hidden fade-in mt-2 space-y-3"><div class="bg-white p-4 rounded-2xl border border-orange-100 shadow-sm relative"><div class="flex justify-between items-start mb-2"><div class="flex items-center gap-2"><i data-lucide="shield-alert" class="w-5 h-5 text-orange-500"></i><h2 class="text-sm font-bold text-slate-800">小額支付平台查詢</h2></div><button onclick="document.getElementById('smallPayDbModal').classList.remove('hidden')" class="text-[10px] text-indigo-500 underline">手動匯入</button></div><div class="relative mb-3"><div class="relative bg-slate-50 rounded-xl shadow-inner border border-slate-200 flex items-center"><i data-lucide="search" class="absolute left-3 w-4 h-4 text-slate-400"></i><input type="text" id="smallPayInput" placeholder="輸入品牌 (如: 鶴茶樓)..." autocomplete="off" class="w-full pl-10 pr-10 py-3 rounded-xl border-none outline-none bg-transparent text-slate-700 placeholder-slate-400 text-sm font-bold" oninput="onSmallPayInput(this.value)"><button onclick="clearSmallPaySearch()" class="absolute right-3 text-slate-300 hover:text-slate-500 p-1"><i data-lucide="x" class="w-4 h-4"></i></button></div><div id="smallPaySuggestions" class="suggestions-box hidden"></div></div><div class="relative"><select id="smallPayCitySelect" onchange="filterSmallPayByCity()" class="w-full bg-orange-50/50 border border-orange-100 rounded-xl py-2.5 pl-3 pr-8 text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-orange-200"><option value="">🏙️ 依縣市查詢店家</option></select></div></div><div id="smallPayResult" class="hidden animate-in fade-in slide-in-from-top-2"></div><div class="text-[10px] text-slate-300 text-center mt-2" id="smallPayStats">資料載入中...</div></div>
@@ -224,7 +224,7 @@
     <div id="smallPayDbModal" class="fixed inset-0 bg-slate-900/60 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in"><h3 class="font-bold text-lg mb-1 text-slate-800 serif-font">匯入小額支付完整名單</h3><p class="text-xs text-slate-400 mb-4">貼上 CSV 網址</p><input type="text" id="smallPayCsvUrl" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 outline-none mb-2" placeholder="https://docs.google.com/..."><div class="flex gap-2"><button onclick="document.getElementById('smallPayDbModal').classList.add('hidden')" class="flex-1 py-2 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">取消</button><button onclick="saveSmallPayDb()" class="flex-1 py-2 rounded-xl bg-indigo-600 text-white font-bold shadow-md text-sm">匯入</button></div></div></div>
     <div id="deleteConfirmModal" class="fixed inset-0 bg-slate-900/60 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in transform transition-all scale-100"><div class="flex flex-col items-center text-center mb-4"><div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-3"><i data-lucide="trash-2" class="w-6 h-6 text-red-500"></i></div><h3 class="font-bold text-lg text-slate-800">確定要刪除嗎？</h3><p class="text-xs text-slate-500 mt-1">刪除後將無法復原。</p></div><div class="flex gap-3"><button onclick="document.getElementById('deleteConfirmModal').classList.add('hidden')" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold text-sm">取消</button><button onclick="executeDelete()" class="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold shadow-md text-sm">確認刪除</button></div></div></div>
     
-    <!-- Transaction Modal (FIXED Z-INDEX to z-[60] to show ABOVE History Modal z-50) -->
+    <!-- Transaction Modal -->
     <div id="transactionModal" class="fixed inset-0 bg-slate-900/60 z-[60] hidden flex items-end sm:items-center justify-center backdrop-blur-sm transition-opacity">
         <div class="bg-white w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl animate-in slide-in-from-bottom-10 duration-300 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold text-slate-800 serif-font" id="txModalTitle">記一筆消費</h3><button onclick="closeTransactionModal()" class="bg-slate-100 p-2 rounded-full text-slate-500 hover:bg-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button></div>
@@ -233,13 +233,12 @@
                 <div><label class="text-xs font-bold text-slate-400 mb-1.5 block">金額 <span class="text-red-400">*</span></label><input type="number" id="txAmount" class="w-full bg-slate-50 border-none rounded-xl p-3.5 text-xl font-bold text-slate-800 outline-none focus:ring-2 focus:ring-indigo-200" placeholder="$0"></div>
                 <div class="flex gap-3">
                     <div class="flex-1"><label class="text-xs font-bold text-slate-400 mb-1.5 block">消費日期 <span class="text-red-400">*</span></label><input type="date" id="txDate" class="w-full bg-slate-50 border-none rounded-xl p-3.5 text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-indigo-200"></div>
-                    <div class="flex-1"><label class="text-xs font-bold text-slate-400 mb-1.5 block">請款日期 <span class="text-indigo-400 text-[10px]">(選填)</span></label><input type="date" id="txSettleDate" class="w-full bg-slate-50 border-none rounded-xl p-3.5 text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-indigo-200"></div>
+                    <div class="flex-1"><label class="text-xs font-bold text-slate-400 mb-1.5 block">入帳日期 <span class="text-indigo-400 text-[10px]">(選填)</span></label><input type="date" id="txSettleDate" class="w-full bg-slate-50 border-none rounded-xl p-3.5 text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-indigo-200"></div>
                 </div>
                 <div><label class="text-xs font-bold text-slate-400 mb-1.5 block">消費類別 <span class="text-red-400">*</span></label><div class="relative"><select id="txCategory" class="w-full bg-slate-50 border-none rounded-xl p-3.5 text-sm font-bold text-slate-700 outline-none focus:ring-2 focus:ring-indigo-200"></select></div></div>
                 <div><label class="text-xs font-bold text-slate-400 mb-1.5 block">消費細項 <span class="text-indigo-400 text-[10px]">(選填)</span></label><input type="text" id="txItem" class="w-full bg-slate-50 border-none rounded-xl p-3.5 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-indigo-200" placeholder="例如：麥當勞、全聯..."></div>
                 <div><label class="text-xs font-bold text-slate-400 mb-1.5 block">消費類型</label><div class="flex gap-3"><label class="flex-1 cursor-pointer custom-checkbox"><input type="checkbox" id="checkReward" value="reward" class="hidden" checked><div class="border border-slate-200 rounded-xl py-3 text-center text-xs font-bold text-slate-500 transition-colors select-none">指定回饋</div></label><label class="flex-1 cursor-pointer custom-checkbox"><input type="checkbox" id="checkGeneral" value="general" class="hidden"><div class="border border-slate-200 rounded-xl py-3 text-center text-xs font-bold text-slate-500 transition-colors select-none">一般/低消</div></label></div></div>
                 <div><input type="text" id="txNote" class="w-full bg-transparent border-b border-slate-200 p-2 text-sm text-slate-600 outline-none placeholder-slate-300" placeholder="備註 (選填)..."></div>
-                <!-- V79: Button logic managed by JS -->
                 <div class="flex gap-3 mt-4 pt-2">
                     <button id="btnDeleteTx" class="hidden flex-1 py-3.5 rounded-xl border border-red-200 text-red-500 font-bold bg-red-50 hover:bg-red-100 transition-colors" onclick="openDeleteConfirm()">刪除</button>
                     <button onclick="saveTransaction()" class="flex-[2] bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold py-3.5 rounded-xl shadow-lg hover:shadow-indigo-200/50 transition-all active:scale-[0.98]">儲存</button>
@@ -248,25 +247,46 @@
         </div>
     </div>
 
-    <!-- History & Settings Modals -->
     <!-- Updated History Modal -->
     <div id="historyModal" class="fixed inset-0 bg-slate-50 z-50 hidden flex flex-col">
-        <div class="bg-white border-b border-slate-100 p-4 flex justify-between items-center shadow-sm z-10 sticky top-0" style="padding-top: calc(1rem + env(safe-area-inset-top));">
-            <div class="flex items-center gap-2">
-                <button onclick="closeHistoryModal()" class="p-2 -ml-2 text-slate-400 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
-                <h2 class="text-lg font-bold text-slate-800 serif-font">歷史帳本</h2>
+        <div class="bg-white border-b border-slate-100 p-4 flex flex-col gap-3 shadow-sm z-10 sticky top-0" style="padding-top: calc(1rem + env(safe-area-inset-top));">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <button onclick="closeHistoryModal()" class="p-2 -ml-2 text-slate-400 hover:text-indigo-600"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
+                    <h2 id="historyModalTitle" class="text-lg font-bold text-slate-800 serif-font">歷史帳本</h2>
+                </div>
+                <!-- Year Selector -->
+                <select id="historyYearSelect" onchange="updateHistoryMonths()" class="bg-slate-50 text-slate-600 text-xs font-bold py-1.5 px-2.5 rounded-lg outline-none border border-slate-200">
+                    <!-- Options populated by JS -->
+                </select>
             </div>
-            <!-- Month Selector -->
-            <select id="historyMonthSelect" onchange="renderHistoryMonth()" class="bg-indigo-50 text-indigo-600 text-sm font-bold py-1.5 px-3 rounded-full outline-none border border-indigo-100">
-                <!-- Options populated by JS -->
-            </select>
+            
+            <div class="flex flex-col gap-2">
+                 <!-- Top Row: Month/Cycle + Card Filter -->
+                <div class="flex gap-2 items-center">
+                    <!-- Month/Cycle Selector -->
+                    <select id="historyMonthSelect" onchange="renderHistoryMonth()" class="flex-[3] bg-indigo-50 text-indigo-600 text-sm font-bold py-2 px-3 rounded-xl outline-none border border-indigo-100 truncate">
+                        <!-- Options populated by JS -->
+                    </select>
+                    <!-- Card Filter (NEW) -->
+                    <select id="historyCardFilter" onchange="renderHistoryMonth()" class="flex-[2] bg-white text-slate-600 text-xs font-bold py-2 px-2 rounded-xl outline-none border border-slate-200 truncate">
+                        <option value="">所有卡片</option>
+                        <!-- Options populated by JS -->
+                    </select>
+                </div>
+                <!-- Bottom Row: Category Filter -->
+                <select id="historyCatFilter" onchange="renderHistoryMonth()" class="w-full bg-white text-slate-600 text-xs font-bold py-2 px-2 rounded-xl outline-none border border-slate-200 truncate">
+                    <option value="">所有類別</option>
+                    <!-- Options populated by JS -->
+                </select>
+            </div>
         </div>
         <div class="flex-1 overflow-y-auto p-4 space-y-4" id="historyListContainer">
             <!-- Chart Area -->
             <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100">
                 <div class="flex justify-between items-end mb-4">
                     <div>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">本月總支出</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wide">本期總支出</p>
                         <h3 class="text-2xl font-bold text-slate-800" id="historyMonthTotal">$0</h3>
                     </div>
                 </div>
@@ -278,8 +298,6 @@
             <div id="historyMonthList" class="space-y-3"></div>
         </div>
     </div>
-
-    <div id="settingsModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in"><h3 class="font-bold text-lg mb-1 text-slate-800 serif-font">卡片設定</h3><h4 class="text-sm text-indigo-500 font-bold mb-4 text-center" id="settingsCardName"></h4><div class="space-y-4 mt-2"><div><label class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-1.5 block">最佳回饋上限</label><div class="input-box-fixed"><span class="text-indigo-400 font-bold mr-2">$</span><input type="number" id="settingCap" class="flex-1 bg-transparent outline-none text-slate-700 font-bold text-lg h-6" placeholder="無上限"></div></div><div><label class="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-1.5 block">低消門檻</label><div class="input-box-fixed"><span class="text-orange-400 font-bold mr-2">$</span><input type="number" id="settingMin" class="flex-1 bg-transparent outline-none text-slate-700 font-bold text-lg h-6" placeholder="0"></div></div><div class="bg-slate-50 p-4 rounded-2xl border border-slate-100"><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block">計算週期</label><div class="flex gap-2 mb-3"><button type="button" onclick="setCycleMode('month')" id="btnCycleMonth" class="flex-1 py-2 text-xs font-bold rounded-lg border">日曆月</button><button type="button" onclick="setCycleMode('bill')" id="btnCycleBill" class="flex-1 py-2 text-xs font-bold rounded-lg border">結帳日</button></div><div id="billDateInputGroup" class="hidden flex items-center gap-2 justify-center"><span class="text-xs text-slate-500 font-bold">每月</span><input type="number" id="settingBillDay" min="1" max="31" class="w-14 text-center bg-white rounded-lg border border-slate-200 outline-none text-sm font-bold text-indigo-600 py-1.5" value="1"><span class="text-xs text-slate-500 font-bold">日 結帳</span></div></div></div><div class="flex gap-3 mt-6"><button onclick="closeSettingsModal()" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">取消</button><button onclick="saveCardSettings()" class="flex-1 py-3 rounded-xl bg-indigo-600 text-white font-bold shadow-md text-sm">確認</button></div></div></div>
 
     <script>
         // --- CONSTANTS ---
@@ -314,28 +332,32 @@
         let sortableInstance = null; // For Drag and Drop
         let historyChartInstance = null; // For ChartJS
         
-        // --- ADDED FOR V94 ---
+        // Settings for History View
+        let currentHistoryMode = 'all';
+        let currentHistoryCardId = null;
+        let currentHistoryCycles = [];
+        let currentHistoryYears = [];
+        
         let currentSmallPayResults = [];
         let currentSmallPayPage = 1;
         const SMALL_PAY_ITEMS_PER_PAGE = 20;
 
         const getStorageKey = (key) => currentUser ? `cc_${key}_${currentUser}` : null;
 
-        // --- FIXED: INIT LOGIC ---
+        // --- INIT LOGIC ---
         function init() {
             loadSmallPayCsv(DEFAULT_SMALL_PAY_CSV_URL);
             
             document.getElementById('txDate').valueAsDate = new Date();
             initCategoryDropdown();
+            initHistoryCategoryDropdown();
             initCityDropdown();
 
-            // FIXED: Move checkLoginAndRender inside the callback
             Papa.parse(DEFAULT_CSV_URL, {
                 download: true, header: true, skipEmptyLines: true,
                 complete: (results) => { 
                     allCardsData = processRawData(results.data); 
                     initDropdowns(); 
-                    // Only check login after card data is loaded to prevent empty renders
                     checkLoginAndRender();
                 },
                 error: () => { 
@@ -348,31 +370,68 @@
         }
         
         function checkLoginAndRender() {
-            currentUser = localStorage.getItem('cc_current_user'); // Refresh from local
             const app = document.getElementById('appContainer');
             const login = document.getElementById('loginScreen');
 
-            if(currentUser) {
-                switchUser(currentUser);
-                app.classList.remove('hidden', 'opacity-0');
-                login.classList.add('hidden');
-                if(currentView === 'manage') switchTab('manage'); else renderView();
-            } else {
-                app.classList.add('hidden');
-                login.classList.remove('hidden');
-            }
+            app.classList.add('hidden', 'opacity-0');
+            login.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
+            resetPinUI();
         }
         
-        // --- V87 Fix: Restore loadSmallPayCsv ---
+        // --- HELPER: GET CYCLE INFO ---
+        // V113: Returns cycleId for static binding to transaction
+        window.getCycleInfo = function(dateObj, cycleType, billDay) {
+            if(isNaN(dateObj.getTime())) dateObj = new Date();
+            const year = dateObj.getFullYear(), month = dateObj.getMonth(), day = dateObj.getDate();
+            let start, end, label, cycleId;
+
+            if (cycleType === 'month') {
+                start = new Date(year, month, 1);
+                end = new Date(year, month + 1, 0);
+                label = `${year}年${month + 1}月 (${month+1}/1~${month+1}/${end.getDate()})`;
+                cycleId = `${year}-${String(month+1).padStart(2,'0')}`;
+            } else {
+                const bDay = parseInt(billDay) || 1;
+                if (day > bDay) {
+                    start = new Date(year, month, bDay + 1);
+                    end = new Date(year, month + 1, bDay);
+                } else {
+                    start = new Date(year, month - 1, bDay + 1);
+                    end = new Date(year, month, bDay);
+                }
+                const endM = end.getMonth() + 1;
+                const endY = end.getFullYear();
+                label = `${endY}年${endM}月帳單 (${start.getMonth()+1}/${start.getDate()}~${end.getMonth()+1}/${end.getDate()})`;
+                cycleId = `${endY}-${String(endM).padStart(2,'0')}-bill`; // Distinct ID for bill cycles
+            }
+            const fmt = (dt) => dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
+            return { start: fmt(start), end: fmt(end), label, cycleId, year: String(end.getFullYear()) };
+        }
+        
+        // Helper to determine the cycleId for a specific card at a specific time
+        window.getCardCycleIdForDate = function(cardId, dateStr) {
+            const card = allCardsData.find(c => c.id === cardId);
+            if (!card) return null;
+            
+            const settings = cardSettings[card.id] || {};
+            let defaultBillDay = 1, hasCsvBillDay = false;
+            if(currentUser === 'Lynn' && card.lynnBillDay) { defaultBillDay = card.lynnBillDay; hasCsvBillDay = true; }
+            if(currentUser === 'Andy' && card.andyBillDay) { defaultBillDay = card.andyBillDay; hasCsvBillDay = true; }
+            let cycleType = settings.cycleType || (hasCsvBillDay ? 'bill' : 'month');
+            const billDay = settings.billDay || defaultBillDay;
+
+            const dateObj = new Date(dateStr);
+            const cycleInfo = getCycleInfo(dateObj, cycleType, billDay);
+            return cycleInfo.cycleId;
+        }
+
         window.loadSmallPayCsv = function(url) {
             Papa.parse(url, {
                 download: true, header: false, skipEmptyLines: true,
                 complete: (results) => {
                     if (results.data && results.data.length > 0) {
                         const newStores = results.data.map(row => ({ name: row[0] || '', city: row[1] || '全台', address: row[2] || '' })).filter(s => s.name && s.name !== "特約商店名稱");
-                        // Add generics
                         SMALL_PAYMENT_CHAINS.forEach(c => newStores.push({ name: c, city: "全台", address: "各分店" }));
-                        // De-dup
                         const uniqueMap = new Map();
                         newStores.forEach(item => {
                             const key = item.name + (item.address || '');
@@ -393,48 +452,39 @@
         }
         window.addEventListener('scroll', checkScroll);
 
-        // --- V81 Fix: User Switch ---
         window.switchUser = function(user) {
             currentUser = user;
             localStorage.setItem('cc_current_user', user);
             API_URL = USER_CONFIGS[user];
             
-            // Re-load everything for new user
             cardSettings = JSON.parse(localStorage.getItem(getStorageKey('card_settings')) || '{}');
             transactions = JSON.parse(localStorage.getItem(getStorageKey('transactions')) || '[]');
             cardSortOrder = JSON.parse(localStorage.getItem(getStorageKey('card_order')) || '[]'); 
             
-            // Update UI
             updateUserUI();
             document.getElementById('gasUrl').value = API_URL;
             
-            // Visual feedback in modal
             const btnLynn = document.getElementById('btnUserLynn');
             const btnAndy = document.getElementById('btnUserAndy');
             
             if(btnLynn) btnLynn.className = user === 'Lynn' ? "py-3 text-sm font-bold rounded-xl border-2 border-pink-400 bg-pink-50 text-pink-600 transition-all flex flex-col items-center gap-1 shadow-sm" : "py-3 text-sm font-bold rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-pink-50 transition-all flex flex-col items-center gap-1 shadow-sm";
             if(btnAndy) btnAndy.className = user === 'Andy' ? "py-3 text-sm font-bold rounded-xl border-2 border-blue-400 bg-blue-50 text-blue-600 transition-all flex flex-col items-center gap-1 shadow-sm" : "py-3 text-sm font-bold rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-blue-50 transition-all flex flex-col items-center gap-1 shadow-sm";
 
-            // Prune Old Data First
             pruneOldData();
-
-            // Sync
-            syncWithCloud(false); // False means don't block UI if cache exists
+            syncWithCloud(false); 
             renderView();
             showToast(`已切換為 ${user}`);
         }
 
-        // --- FIXED: CLEANUP DATA (6 MONTHS) ---
         function pruneOldData() {
             if (!transactions || transactions.length === 0) return;
             const now = new Date();
-            const cutoffDate = new Date(now.getFullYear(), now.getMonth() - 6, 1); // 6 months ago, 1st day
-            
+            const cutoffDate = new Date(now.getFullYear(), now.getMonth() - 6, 1);
             const originalCount = transactions.length;
             const validTransactions = transactions.filter(t => {
-                if (!t.date) return true; // Keep if date is missing to be safe
+                if (!t.date) return true;
                 const tDate = new Date(t.date);
-                if (isNaN(tDate.getTime())) return true; // Keep invalid dates to prevent accidental deletion
+                if (isNaN(tDate.getTime())) return true;
                 return tDate >= cutoffDate;
             });
 
@@ -498,9 +548,7 @@
         }
 
         window.loginSuccess = function(user) {
-            // Initial load calls switchUser to set up everything
             switchUser(user);
-            
             document.getElementById('loginScreen').classList.add('opacity-0', 'pointer-events-none');
             setTimeout(() => {
                 document.getElementById('loginScreen').classList.add('hidden');
@@ -545,33 +593,11 @@
             }
         }
 
-        // --- CORE FUNCTIONS (Standard) ---
+        // --- CORE FUNCTIONS ---
         window.initCategoryDropdown = function() { const s = document.getElementById('txCategory'); s.innerHTML=''; TX_CATEGORIES.forEach(c => { const o = document.createElement('option'); o.value=c; o.text=c; s.appendChild(o); }); }
+        window.initHistoryCategoryDropdown = function() { const s = document.getElementById('historyCatFilter'); s.innerHTML='<option value="">所有類別</option>'; TX_CATEGORIES.forEach(c => { const o = document.createElement('option'); o.value=c; o.text=c; s.appendChild(o); }); }
         window.initCityDropdown = function() { const s = document.getElementById('smallPayCitySelect'); s.innerHTML='<option value="">🏙️ 依縣市查詢店家</option>'; TAIWAN_CITIES.forEach(c => { const o = document.createElement('option'); o.value=c; o.text=c; s.appendChild(o); }); }
         
-        function getCycleRange(settings, refDate) { 
-            const year = refDate.getFullYear(), month = refDate.getMonth(), day = refDate.getDate(); 
-            let start, end; 
-            if (settings.cycleType === 'month') { 
-                start = new Date(year, month, 1); 
-                end = new Date(year, month + 1, 0); 
-            } else { 
-                const billDay = parseInt(settings.billDay) || 1; 
-                // Fix logic: If today > billDay, we are in the cycle that ends next month.
-                // If today <= billDay, we are in the cycle that started last month.
-                if (day > billDay) { 
-                    start = new Date(year, month, billDay + 1); 
-                    end = new Date(year, month + 1, billDay); 
-                } else { 
-                    start = new Date(year, month - 1, billDay + 1); 
-                    end = new Date(year, month, billDay); 
-                } 
-            } 
-            // Use local date string construction to avoid timezone issues
-            const fmt = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-            return { start: fmt(start), end: fmt(end) }; 
-        }
-
         window.processRawData = function(data) { 
             const map = new Map(); uniqueBanks = []; 
             data.forEach(row => { 
@@ -584,82 +610,47 @@
                     id, bank, name, 
                     color: getBankColor(bank), 
                     offers: [], 
-                    defaultMin: 0, 
-                    defaultCap: 0, 
-                    domesticBase: '', 
-                    foreignBase: '',
-                    lynnBillDay: 0,
-                    andyBillDay: 0,
-                    expiryDate: '' 
+                    defaultMin: 0, defaultCap: 0, domesticBase: '', foreignBase: '',
+                    lynnBillDay: 0, andyBillDay: 0, expiryDate: '' 
                 });
                 const obj = map.get(id);
                 
                 if (bank === '台中銀') {
                     const g69 = get(['G69']);
-                    if (g69) {
-                         const n = parseFloat(String(g69).replace(/[^\d.]/g, ''));
-                         if (!isNaN(n) && n > 0) obj.defaultMin = n;
-                    } else {
-                         const min = get(['低消', '門檻', 'min', 'low', '回饋低消']);
-                         if(min) { const n = parseFloat(String(min).replace(/[^\d.]/g, '')); if(!isNaN(n) && n > 0) obj.defaultMin = n; }
-                    }
+                    if (g69) { const n = parseFloat(String(g69).replace(/[^\d.]/g, '')); if (!isNaN(n) && n > 0) obj.defaultMin = n; } 
+                    else { const min = get(['低消', '門檻', 'min', 'low', '回饋低消']); if(min) { const n = parseFloat(String(min).replace(/[^\d.]/g, '')); if(!isNaN(n) && n > 0) obj.defaultMin = n; } }
                 } else {
                     const min = get(['低消', '門檻', 'min', 'low', '回饋低消']);
                     if(min) { const n = parseFloat(String(min).replace(/[^\d.]/g, '')); if(!isNaN(n) && n > 0) obj.defaultMin = n; }
                 }
 
                 const capRow = get(['指定回饋上限', 'bonus_cap', '最佳刷卡上限', '刷卡上限', 'cap', 'limit', '上限']);
-                if(capRow) { 
-                    const n = parseFloat(String(capRow).replace(/[^\d.]/g, '')); 
-                    if(!isNaN(n) && n > 0) {
-                        obj.defaultCap = Math.max(obj.defaultCap, n);
-                    }
-                }
-
-                const domBase = get(['國內基礎回饋', '國內基礎', 'domestic']);
-                if(domBase) obj.domesticBase = domBase;
-
-                const forBase = get(['國外基礎回饋', '國外基礎', 'foreign']);
-                if(forBase) obj.foreignBase = forBase;
-
-                const baseCap = get(['基礎回饋上限', 'base_cap']);
-                if (baseCap) obj.baseCap = baseCap;
-
-                const lynnDay = get(['Lynn結帳日', 'lynn_bill']);
-                if (lynnDay) { const n = parseInt(String(lynnDay).replace(/[^\d]/g, '')); if(!isNaN(n)) obj.lynnBillDay = n; }
-
-                const andyDay = get(['Andy結帳日', 'andy_bill']);
-                if (andyDay) { const n = parseInt(String(andyDay).replace(/[^\d]/g, '')); if(!isNaN(n)) obj.andyBillDay = n; }
-
-                const expiry = get(['權益期限', 'expiry', 'valid_until']);
-                if (expiry) obj.expiryDate = expiry;
+                if(capRow) { const n = parseFloat(String(capRow).replace(/[^\d.]/g, '')); if(!isNaN(n) && n > 0) obj.defaultCap = Math.max(obj.defaultCap, n); }
+                const domBase = get(['國內基礎回饋', '國內基礎', 'domestic']); if(domBase) obj.domesticBase = domBase;
+                const forBase = get(['國外基礎回饋', '國外基礎', 'foreign']); if(forBase) obj.foreignBase = forBase;
+                const baseCap = get(['基礎回饋上限', 'base_cap']); if (baseCap) obj.baseCap = baseCap;
+                const lynnDay = get(['Lynn結帳日', 'lynn_bill']); if (lynnDay) { const n = parseInt(String(lynnDay).replace(/[^\d]/g, '')); if(!isNaN(n)) obj.lynnBillDay = n; }
+                const andyDay = get(['Andy結帳日', 'andy_bill']); if (andyDay) { const n = parseInt(String(andyDay).replace(/[^\d]/g, '')); if(!isNaN(n)) obj.andyBillDay = n; }
+                const expiry = get(['權益期限', 'expiry', 'valid_until']); if (expiry) obj.expiryDate = expiry;
 
                 const cat = get(['類別', 'category']);
                 if(cat) {
                     let rawRate = String(get(['最佳回饋', '基礎+指定回饋', '最高回饋', 'max_total', '回饋', 'rate']) || '0');
                     if(rawRate === '0') rawRate = String(get(['回饋', 'rate']) || '0'); 
-
                     let rateVal = 0;
                     if (rawRate.includes('-') || rawRate.includes('~')) {
                          const parts = rawRate.split(/[-~]/).map(p => parseFloat(p.replace('%',''))).filter(n => !isNaN(n));
                          rateVal = Math.max(...parts);
-                    } else {
-                         rateVal = parseFloat(rawRate.replace('%','')) || 0;
-                    }
+                    } else { rateVal = parseFloat(rawRate.replace('%','')) || 0; }
                     if(!rawRate.includes('%') && rateVal > 0) rawRate += '%';
 
                     obj.offers.push({ 
-                        category: cat, 
-                        rate: rateVal, 
-                        rateStr: rawRate, 
+                        category: cat, rate: rateVal, rateStr: rawRate, 
                         desc: get(['說明', '備註', 'desc', 'note']), 
                         tags: String(get(['關鍵字', 'tags'])).split(/[,，、]/).filter(Boolean), 
-                        baseRate: get(['基礎', 'baseRate']), 
-                        cap: get(['上限', 'cap']),
-                        paymentMethod: get(['限定支付方式', '限定支付', 'payment']),
-                        bonusRate: get(['指定加碼回饋', 'bonus_rate']),
-                        bonusCap: get(['指定回饋上限', 'bonus_cap']),
-                        totalRate: get(['基礎+指定回饋', '基礎加指定', 'max_total'])
+                        baseRate: get(['基礎', 'baseRate']), cap: get(['上限', 'cap']),
+                        paymentMethod: get(['限定支付方式', '限定支付', 'payment']), bonusRate: get(['指定加碼回饋', 'bonus_rate']),
+                        bonusCap: get(['指定回饋上限', 'bonus_cap']), totalRate: get(['基礎+指定回饋', '基礎加指定', 'max_total'])
                     });
                 }
             });
@@ -676,14 +667,11 @@
         window.postToCloud = async function(payload) { 
             if(!API_URL) return { status: 'error', message: 'No API URL' }; 
             try { 
-                const response = await fetch(API_URL, { 
-                    method: 'POST', body: JSON.stringify(payload) 
-                });
+                const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
                 return await response.json();
             } catch(e) { console.error(e); return { status: 'error', message: e.toString() }; } 
         }
 
-        // --- FIXED: ROBUST SYNC LOGIC & TYPE SAFETY ---
         window.syncWithCloud = async function(forceShowLoading = true) { 
             if(!API_URL) return; 
             
@@ -699,7 +687,6 @@
                 const j = await r.json(); 
                 
                 if(j.status === 'success' && j.data && Array.isArray(j.data)) { 
-                    // Helper to fuzzy match keys (e.g., "Amount", "amount", "money")
                     const getValue = (obj, keys) => {
                         const foundKey = Object.keys(obj).find(k => keys.some(search => k.toLowerCase() === search.toLowerCase()));
                         return foundKey ? obj[foundKey] : null;
@@ -708,58 +695,49 @@
                     const cloudTxs = j.data.map(tx => {
                         let rawAmt = getValue(tx, ['amount', 'money', 'price', 'cost']);
                         let rawDate = getValue(tx, ['date', 'time', 'day']);
-                        let rawSettleDate = getValue(tx, ['settleDate', 'settlementDate', 'billDate']); // New Field
+                        let rawSettleDate = getValue(tx, ['settleDate', 'settlementDate', 'billDate']);
                         let rawCat = getValue(tx, ['category', 'type']);
                         let rawItem = getValue(tx, ['item', 'desc', 'name', 'detail']);
                         let rawNote = getValue(tx, ['note', 'memo']);
                         let rawCard = getValue(tx, ['cardId', 'card']);
                         let rawId = getValue(tx, ['id']);
                         let rawTypes = getValue(tx, ['types']);
+                        let rawStaticCycleId = getValue(tx, ['staticCycleId', 'cycleId']); // V113 support
 
                         let amt = parseFloat(rawAmt);
                         if(isNaN(amt)) amt = 0;
                         
-                        // --- V111 Fix: Smart Date Parsing ---
                         const parseDateString = (str) => {
                             if (!str) return "";
                             str = String(str).trim();
-                            // If it looks like a full ISO string (e.g., 2024-01-08T16:00:00.000Z), assume it might be JSON date
                             if (str.includes('T') && str.endsWith('Z')) {
                                 const dObj = new Date(str);
-                                // Convert to Taiwan time (UTC+8) manually to get YYYY-MM-DD
-                                // Because dObj is UTC, adding 8 hours (28800000ms) gets us Taiwan time
                                 const taiwanTime = new Date(dObj.getTime() + 28800000);
                                 return taiwanTime.toISOString().split('T')[0];
                             }
-                            // Standard fallback
                             return str.replace(/\//g, '-').split('T')[0];
                         };
 
                         let d = parseDateString(rawDate);
                         let sd = parseDateString(rawSettleDate);
-
-                        // Sanitize Types
                         let types = rawTypes;
-                        if (typeof types === 'string') {
-                             try { types = JSON.parse(types); } catch(e) { types = []; }
-                        }
+                        if (typeof types === 'string') { try { types = JSON.parse(types); } catch(e) { types = []; } }
                         if (!Array.isArray(types)) types = [];
                         
+                        // Backwards compatibility: calculate static cycle if missing
+                        let staticCycleId = rawStaticCycleId;
+                        if(!staticCycleId && rawCard && (sd || d)) {
+                             staticCycleId = getCardCycleIdForDate(rawCard, sd || d);
+                        }
+
                         return { 
-                            // FORCE STRING ID
                             id: String(rawId || (Date.now().toString() + Math.random().toString(36).substr(2, 5))),
-                            cardId: rawCard || "",
-                            amount: amt, 
-                            date: d,
-                            settleDate: sd,
-                            category: rawCat || "📦 其他",
-                            item: rawItem || "",
-                            note: rawNote || "",
-                            types: types
+                            cardId: rawCard || "", amount: amt, date: d, settleDate: sd,
+                            category: rawCat || "📦 其他", item: rawItem || "", note: rawNote || "", types: types,
+                            staticCycleId: staticCycleId
                         };
                     });
 
-                    // Only overwrite if we found valid data OR if cloud explicitly returned empty array (new user)
                     const validTxs = cloudTxs.filter(tx => tx.date && tx.amount >= 0 && tx.cardId);
 
                     if (validTxs.length > 0) {
@@ -784,7 +762,7 @@
         }
         
         window.showLoading = function(show, text = "雲端同步中...") { document.getElementById('loadingText').innerText=text; document.getElementById('loadingOverlay').classList.toggle('hidden', !show); }
-        window.showToast = function(msg) { const t = document.getElementById('toast'); t.innerText = msg; t.classList.remove('opacity-0', 'pointer-events-none'); setTimeout(() => t.classList.add('opacity-0', 'pointer-events-none'), 2000); }
+        window.showToast = function(msg, duration = 2000) { const t = document.getElementById('toast'); t.innerText = msg; t.classList.remove('opacity-0', 'pointer-events-none'); setTimeout(() => t.classList.add('opacity-0', 'pointer-events-none'), duration); }
 
         window.switchTab = function(view) {
             currentView = view;
@@ -889,46 +867,33 @@
             const cardStats = allCardsData.map(card => {
                 const settings = cardSettings[card.id] || {};
                 
-                // --- FIX START: Determine default Bill Day and Cycle Type correctly ---
                 let defaultBillDay = 1;
                 let hasCsvBillDay = false;
 
-                if(currentUser === 'Lynn' && card.lynnBillDay) {
-                    defaultBillDay = card.lynnBillDay;
-                    hasCsvBillDay = true;
-                }
-                if(currentUser === 'Andy' && card.andyBillDay) {
-                    defaultBillDay = card.andyBillDay;
-                    hasCsvBillDay = true;
-                }
+                if(currentUser === 'Lynn' && card.lynnBillDay) { defaultBillDay = card.lynnBillDay; hasCsvBillDay = true; }
+                if(currentUser === 'Andy' && card.andyBillDay) { defaultBillDay = card.andyBillDay; hasCsvBillDay = true; }
 
                 let cycleType = settings.cycleType;
-                if (!cycleType) {
-                    cycleType = hasCsvBillDay ? 'bill' : 'month';
-                }
+                if (!cycleType) cycleType = hasCsvBillDay ? 'bill' : 'month';
                 
                 const billDay = settings.billDay || defaultBillDay;
-                // --- FIX END ---
 
-                const { start, end } = getCycleRange({ cycleType, billDay }, new Date());
+                const currentCycleInfo = getCycleInfo(new Date(), cycleType, billDay);
                 
-                // --- FILTER LOGIC UPDATE: Use SettleDate if available ---
                 const cardTxs = transactions.filter(t => {
-                    const effectiveDate = t.settleDate || t.date; // PRIORITY: Settle Date > Transaction Date
-                    return t.cardId === card.id && effectiveDate >= start && effectiveDate <= end;
+                    // Match current cycle based on static ID (if it exists) OR date range fallback
+                    if (t.staticCycleId && t.cardId === card.id) {
+                         return t.staticCycleId === currentCycleInfo.cycleId;
+                    }
+                    const effectiveDate = t.settleDate || t.date;
+                    return t.cardId === card.id && effectiveDate >= currentCycleInfo.start && effectiveDate <= currentCycleInfo.end;
                 });
                 
-                // Sort Txs by effective date desc
-                cardTxs.sort((a,b) => {
-                    const dateA = new Date(a.settleDate || a.date);
-                    const dateB = new Date(b.settleDate || b.date);
-                    return dateB - dateA;
-                });
+                cardTxs.sort((a,b) => new Date(b.settleDate || b.date) - new Date(a.settleDate || a.date));
                 
-                // Calculate totals based on types
                 let totalSpent = 0;
-                let totalCap = 0; // For Reward Cap Bar
-                let totalMin = 0; // For Min Spend Bar
+                let totalCap = 0; 
+                let totalMin = 0; 
 
                 cardTxs.forEach(tx => {
                     const amt = Number(tx.amount);
@@ -940,11 +905,9 @@
 
                 const cap = settings.cap || card.defaultCap || 0;
                 const min = settings.min || card.defaultMin || 0;
-                // Pass cycleType so UI can verify what mode is used
-                return { ...card, total: totalSpent, totalCap, totalMin, cap, min, start, end, settings, billDay, cycleType, cardTxs };
+                return { ...card, total: totalSpent, totalCap, totalMin, cap, min, start: currentCycleInfo.start, end: currentCycleInfo.end, settings, billDay, cycleType, cardTxs };
             });
 
-            // Sort: Active cards (total > 0) first, then by user order
             cardStats.sort((a, b) => {
                 const aActive = a.total > 0 ? 1 : 0;
                 const bActive = b.total > 0 ? 1 : 0;
@@ -990,9 +953,7 @@
                 if(card.cardTxs.length > 0) {
                     txListHtml = `<div class="mt-4 pt-3 border-t border-slate-50 space-y-2">`;
                     card.cardTxs.forEach(tx => {
-                        // Display Settle Date if exists
-                        const dateDisplay = tx.settleDate ? `<span class="text-indigo-500" title="請款日">${tx.settleDate.slice(5)}</span>` : tx.date.slice(5);
-                        
+                        const dateDisplay = tx.settleDate ? `<span class="text-indigo-500" title="入帳日">${tx.settleDate.slice(5)}</span>` : tx.date.slice(5);
                         txListHtml += `
                             <div class="flex justify-between items-center text-xs group">
                                 <div class="flex items-center gap-2 overflow-hidden">
@@ -1009,7 +970,6 @@
                     txListHtml += `</div>`;
                 }
 
-                // Add Bill Day Info
                 let billInfo = '依日曆月計算';
                 if (card.cycleType === 'bill') {
                     billInfo = `結帳日: 每月 ${card.billDay} 號 (隔日重置)`;
@@ -1025,9 +985,10 @@
                     </div>
                     ${barsHtml}
                     ${txListHtml}
-                    <div class="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-50">
-                        <button onclick="openTransactionModal(); document.getElementById('txCardSelect').value='${card.id}';" class="py-2 rounded-xl bg-indigo-50 text-indigo-600 text-xs font-bold hover:bg-indigo-100 transition-colors">記一筆</button>
-                        <div class="flex gap-2"><button onclick="openSettingsModal('${card.id}')" class="flex-1 py-2 rounded-xl bg-slate-50 text-slate-500 text-xs font-bold hover:bg-slate-100 transition-colors">設定</button></div>
+                    <div class="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-slate-50">
+                        <button onclick="openTransactionModal(); document.getElementById('txCardSelect').value='${card.id}';" class="col-span-1 py-2 rounded-xl bg-indigo-50 text-indigo-600 text-xs font-bold hover:bg-indigo-100 transition-colors">記一筆</button>
+                        <button onclick="openHistoryModal('${card.id}')" class="col-span-1 py-2 rounded-xl bg-slate-50 text-slate-500 text-xs font-bold hover:bg-slate-100 transition-colors">歷史帳單</button>
+                        <button onclick="openSettingsModal('${card.id}')" class="col-span-1 py-2 rounded-xl bg-slate-50 text-slate-500 text-xs font-bold hover:bg-slate-100 transition-colors">設定</button>
                     </div>
                 `;
                 container.appendChild(el);
@@ -1055,26 +1016,19 @@
             const modal = document.getElementById('cardSortModal');
             if(!modal) return;
             
-            // Init sort order if empty
             if (cardSortOrder.length === 0) { cardSortOrder = allCardsData.map(c => c.id); }
-            // Add new cards to sort order
             const existingIds = new Set(cardSortOrder);
             allCardsData.forEach(c => { if(!existingIds.has(c.id)) cardSortOrder.push(c.id); });
             
             renderCardSortList();
             modal.classList.remove('hidden');
 
-            // Init SortableJS
             const el = document.getElementById('cardSortList');
             if(sortableInstance) sortableInstance.destroy();
             
             sortableInstance = new Sortable(el, {
-                animation: 150,
-                handle: '.drag-handle', // <--- Add this
-                ghostClass: 'sortable-ghost',
-                dragClass: 'sortable-drag',
+                animation: 150, handle: '.drag-handle', ghostClass: 'sortable-ghost', dragClass: 'sortable-drag',
                 onEnd: function (evt) {
-                    // Reorder array based on DOM
                     const newOrder = [];
                     const items = el.querySelectorAll('[data-id]');
                     items.forEach(item => newOrder.push(item.getAttribute('data-id')));
@@ -1090,7 +1044,7 @@
              const validOrder = cardSortOrder.filter(id => allCardsData.find(c => c.id === id));
              if(validOrder.length !== cardSortOrder.length) { cardSortOrder = validOrder; }
              
-             validOrder.forEach((cardId, index) => {
+             validOrder.forEach((cardId) => {
                  const card = allCardsData.find(c => c.id === cardId);
                  if(!card) return;
                  const row = document.createElement('div');
@@ -1100,17 +1054,13 @@
                     <div class="flex items-center gap-3 overflow-hidden flex-1">
                         <div class="truncate"><span class="bank-badge ${card.color} scale-75 origin-left inline-block -mr-1">${card.bank}</span><span class="text-sm font-bold text-slate-700">${card.name}</span></div>
                     </div>
-                    <!-- Right Grip Handle -->
-                    <div class="drag-handle p-3 text-slate-400 cursor-grab active:cursor-grabbing touch-none">
-                        <i data-lucide="grip-vertical" class="w-5 h-5"></i>
-                    </div>
+                    <div class="drag-handle p-3 text-slate-400 cursor-grab active:cursor-grabbing touch-none"><i data-lucide="grip-vertical" class="w-5 h-5"></i></div>
                  `;
                  listContainer.appendChild(row);
              });
              lucide.createIcons();
         }
 
-        // --- FIXED: OPEN TRANSACTION MODAL WITH TYPE SAFETY ---
         window.openTransactionModal = function(existingTxId) {
             const modal = document.getElementById('transactionModal');
             if(!modal) return; 
@@ -1121,10 +1071,7 @@
             
             select.innerHTML = '';
             const defaultOpt = document.createElement('option');
-            defaultOpt.value = "";
-            defaultOpt.text = "請選擇卡片";
-            defaultOpt.disabled = true;
-            defaultOpt.selected = true;
+            defaultOpt.value = ""; defaultOpt.text = "請選擇卡片"; defaultOpt.disabled = true; defaultOpt.selected = true;
             select.appendChild(defaultOpt);
             
             let sortedCards = [...allCardsData];
@@ -1142,20 +1089,17 @@
             if (existingTxId) {
                 editingTransactionId = existingTxId;
                 if(title) title.innerText = "修改消費紀錄";
-                // FIXED: Use String comparison for ID
                 const tx = transactions.find(t => String(t.id) === String(existingTxId));
                 if (tx) {
                     select.value = tx.cardId;
                     document.getElementById('txAmount').value = tx.amount;
                     document.getElementById('txDate').value = tx.date;
-                    document.getElementById('txSettleDate').value = tx.settleDate || ''; // Settle Date
+                    document.getElementById('txSettleDate').value = tx.settleDate || '';
                     document.getElementById('txCategory').value = tx.category || "🍽️ 餐飲";
                     document.getElementById('txItem').value = tx.item || "";
                     document.getElementById('txNote').value = tx.note || "";
-                    const isReward = tx.types ? tx.types.includes('reward') : true;
-                    const isGeneral = tx.types ? tx.types.includes('general') : false;
-                    document.getElementById('checkReward').checked = isReward;
-                    document.getElementById('checkGeneral').checked = isGeneral;
+                    document.getElementById('checkReward').checked = tx.types ? tx.types.includes('reward') : true;
+                    document.getElementById('checkGeneral').checked = tx.types ? tx.types.includes('general') : false;
                 }
                 if(btnDel) { btnDel.classList.remove('hidden'); btnDel.style.display = 'block'; }
             } else {
@@ -1163,7 +1107,7 @@
                 if(title) title.innerText = "記一筆消費";
                 document.getElementById('txAmount').value = '';
                 document.getElementById('txDate').valueAsDate = new Date();
-                document.getElementById('txSettleDate').value = ''; // Reset
+                document.getElementById('txSettleDate').value = '';
                 document.getElementById('txCategory').value = "🍽️ 餐飲";
                 document.getElementById('txItem').value = '';
                 document.getElementById('txNote').value = '';
@@ -1178,13 +1122,12 @@
         window.closeTransactionModal = function() { document.getElementById('transactionModal').classList.add('hidden'); }
         window.openDeleteConfirm = function() { document.getElementById('deleteConfirmModal').classList.remove('hidden'); }
         
-        // --- FIXED: SAVE TRANSACTION WITH TYPE SAFETY ---
         window.saveTransaction = async function() {
             if (!currentUser) return alert('請先選擇使用者身分 (設定 > 選擇身分)');
             const cardId = document.getElementById('txCardSelect').value;
             const amount = parseFloat(document.getElementById('txAmount').value);
             const date = document.getElementById('txDate').value;
-            const settleDate = document.getElementById('txSettleDate').value; // Get Settle Date
+            const settleDate = document.getElementById('txSettleDate').value; 
             const category = document.getElementById('txCategory').value;
             const item = document.getElementById('txItem').value; 
             const note = document.getElementById('txNote').value;
@@ -1194,29 +1137,30 @@
 
             if (!cardId || isNaN(amount) || amount <= 0 || !date) { alert(`請記得填寫必要欄位喔`); return; }
             
-            // FIXED: Ensure timestamp/id logic is robust
-            let txData = { cardId, amount, date, settleDate, category, item, note, types, timestamp: Date.now() };
+            // Calculate staticCycleId when saving
+            const staticCycleId = getCardCycleIdForDate(cardId, settleDate || date);
+
+            let txData = { cardId, amount, date, settleDate, category, item, note, types, timestamp: Date.now(), staticCycleId };
             let action = 'add'; 
 
             if (editingTransactionId) {
                 action = 'edit';
-                // FIXED: Use String comparison
                 const index = transactions.findIndex(t => String(t.id) === String(editingTransactionId));
                 if (index !== -1) { 
                     txData.id = editingTransactionId; 
+                    // Preserve old staticCycleId if dates didn't change (optional, but recalculating is usually safer)
                     transactions[index] = txData; 
                 }
             } else {
                 action = 'add';
-                // FIXED: Robust ID generation (String)
                 txData.id = Date.now().toString() + Math.random().toString(36).substr(2, 5);
                 transactions.push(txData);
             }
 
             localStorage.setItem(getStorageKey('transactions'), JSON.stringify(transactions));
             renderView();
-            // REFRESH HISTORY IF OPEN
-            if(!document.getElementById('historyModal').classList.contains('hidden')) {
+            if(!document.getElementById('historyModal').classList.contains('hidden')) { 
+                // Only re-render list, preserve filters
                 renderHistoryMonth(); 
             }
             closeTransactionModal();
@@ -1224,111 +1168,230 @@
             
             try {
                 const result = await postToCloud({ action: action, item: txData, id: txData.id });
-                if (result.status === 'success') {
-                    showToast('✅ 雲端已同步');
-                } else {
-                    showToast('❌ 雲端同步失敗');
-                }
-            } catch(e) {
-                showToast('❌ 網路錯誤');
-            }
+                if (result.status === 'success') { showToast('✅ 雲端已同步'); } else { showToast('❌ 雲端同步失敗'); }
+            } catch(e) { showToast('❌ 網路錯誤'); }
         }
 
-        // --- FIXED: DELETE TRANSACTION WITH TYPE SAFETY ---
         window.executeDelete = async function() {
             if (!currentUser) return;
             document.getElementById('deleteConfirmModal').classList.add('hidden'); 
             
             const txId = editingTransactionId;
-            // FIXED: Use String comparison for filtering
             transactions = transactions.filter(t => String(t.id) !== String(txId));
             localStorage.setItem(getStorageKey('transactions'), JSON.stringify(transactions));
             
             renderView();
-            // REFRESH HISTORY IF OPEN
-            if(!document.getElementById('historyModal').classList.contains('hidden')) {
-                renderHistoryMonth(); 
-            }
+            if(!document.getElementById('historyModal').classList.contains('hidden')) { renderHistoryMonth(); }
             closeTransactionModal();
             showToast('🗑️ 已刪除 (同步中...)');
 
             try {
                 const result = await postToCloud({ action: 'delete', id: txId }); 
-                if (result.status === 'success') {
-                    // Silent success
-                } else {
-                    alert('刪除失敗：雲端資料庫未回應。');
-                }
-            } catch(e) {
-                alert('刪除失敗：網路錯誤。');
-            }
+                if (result.status === 'success') { } else { alert('刪除失敗：雲端資料庫未回應。'); }
+            } catch(e) { alert('刪除失敗：網路錯誤。'); }
         }
         
-        // --- HISTORY FUNCTIONS ---
-        // V101: Updated History Function
-        window.openHistoryModal = function() {
-            document.getElementById('historyModal').classList.remove('hidden');
+        // --- HISTORY FUNCTIONS (V113 Updated) ---
+        window.openHistoryModal = function(cardId = null) {
+            currentHistoryMode = cardId ? 'card' : 'all';
+            currentHistoryCardId = cardId;
             
+            document.getElementById('historyModal').classList.remove('hidden');
+            document.getElementById('historyCatFilter').value = ''; // Reset category filter
+            
+            const modalTitle = document.getElementById('historyModalTitle');
+            const yearSelect = document.getElementById('historyYearSelect');
+            const cardFilter = document.getElementById('historyCardFilter');
+            
+            // Populate Card Filter
+            cardFilter.innerHTML = '<option value="">所有卡片</option>';
+            // Sort cards logically (alphabetical by bank, then name)
+            const sortedForFilter = [...allCardsData].sort((a, b) => {
+                 if (a.bank === b.bank) return a.name.localeCompare(b.name);
+                 return a.bank.localeCompare(b.bank);
+            });
+            
+            sortedForFilter.forEach(c => {
+                 const opt = document.createElement('option');
+                 opt.value = c.id;
+                 opt.text = `${c.bank} - ${c.name}`;
+                 cardFilter.appendChild(opt);
+            });
+
+            if (currentHistoryMode === 'card') {
+                const card = allCardsData.find(c => c.id === cardId);
+                modalTitle.innerText = `${card.name} 歷史帳單`;
+                cardFilter.value = card.id; // Auto-select the card
+                cardFilter.classList.add('hidden'); // Hide filter if we are already viewing a specific card's history
+                
+                const settings = cardSettings[card.id] || {};
+                let defaultBillDay = 1, hasCsvBillDay = false;
+                if(currentUser === 'Lynn' && card.lynnBillDay) { defaultBillDay = card.lynnBillDay; hasCsvBillDay = true; }
+                if(currentUser === 'Andy' && card.andyBillDay) { defaultBillDay = card.andyBillDay; hasCsvBillDay = true; }
+                let cycleType = settings.cycleType || (hasCsvBillDay ? 'bill' : 'month');
+                const billDay = settings.billDay || defaultBillDay;
+
+                const cycleMap = new Map();
+                const currentCycle = getCycleInfo(new Date(), cycleType, billDay);
+                cycleMap.set(currentCycle.cycleId, currentCycle);
+
+                transactions.forEach(tx => {
+                    if (tx.cardId === cardId) {
+                        if (tx.staticCycleId) {
+                            // If it has a static ID, reconstruct a dummy label
+                            if (!cycleMap.has(tx.staticCycleId)) {
+                                const isBill = tx.staticCycleId.endsWith('-bill');
+                                const parts = tx.staticCycleId.split('-');
+                                const y = parts[0], m = parts[1];
+                                cycleMap.set(tx.staticCycleId, {
+                                    cycleId: tx.staticCycleId,
+                                    label: isBill ? `${y}年${m}月帳單` : `${y}年${m}月`,
+                                    year: y
+                                });
+                            }
+                        } else {
+                            // Fallback for older transactions
+                            const effectiveDate = tx.settleDate || tx.date;
+                            if (effectiveDate) {
+                                const c = getCycleInfo(new Date(effectiveDate), cycleType, billDay);
+                                cycleMap.set(c.cycleId, c);
+                            }
+                        }
+                    }
+                });
+
+                currentHistoryCycles = Array.from(cycleMap.values()).sort((a,b) => b.cycleId.localeCompare(a.cycleId));
+                
+            } else {
+                modalTitle.innerText = "歷史總覽 (所有卡片)";
+                cardFilter.value = "";
+                cardFilter.classList.remove('hidden'); // Show filter in global view
+                
+                const monthMap = new Map();
+                
+                // Always add current month
+                const now = new Date();
+                const currentM = now.toISOString().substring(0, 7);
+                const currentY = String(now.getFullYear());
+                monthMap.set(currentM, { cycleId: currentM, label: `${currentY}年${currentM.split('-')[1]}月`, year: currentY });
+
+                transactions.forEach(tx => {
+                    const viewDate = tx.settleDate || tx.date;
+                    if(viewDate && typeof viewDate === 'string' && viewDate.length >= 7) {
+                        const m = viewDate.substring(0, 7);
+                        const y = viewDate.substring(0, 4);
+                        if (!monthMap.has(m)) {
+                             monthMap.set(m, { cycleId: m, label: `${y}年${m.split('-')[1]}月`, year: y });
+                        }
+                    }
+                });
+                
+                currentHistoryCycles = Array.from(monthMap.values()).sort((a,b) => b.cycleId.localeCompare(a.cycleId));
+            }
+
+            // Extract unique years
+            const years = new Set();
+            currentHistoryCycles.forEach(c => years.add(c.year));
+            currentHistoryYears = Array.from(years).sort().reverse();
+            
+            // Populate Year Select
+            yearSelect.innerHTML = '';
+            currentHistoryYears.forEach(y => {
+                const opt = document.createElement('option');
+                opt.value = y; opt.text = `${y}年`;
+                yearSelect.appendChild(opt);
+            });
+            
+            if(currentHistoryYears.length > 0) {
+                yearSelect.value = currentHistoryYears[0];
+                updateHistoryMonths(); // This will trigger renderHistoryMonth
+            }
+        }
+
+        window.updateHistoryMonths = function() {
+            const selectedYear = document.getElementById('historyYearSelect').value;
             const monthSelect = document.getElementById('historyMonthSelect');
             monthSelect.innerHTML = '';
             
-            const months = new Set();
-            transactions.forEach(tx => {
-                const viewDate = tx.date;
-                if(viewDate && typeof viewDate === 'string' && viewDate.length >= 7) {
-                    months.add(viewDate.substring(0, 7)); // YYYY-MM
-                }
-            });
+            const filteredCycles = currentHistoryCycles.filter(c => c.year === selectedYear);
             
-            const sortedMonths = Array.from(months).sort().reverse();
-            if(sortedMonths.length === 0) {
-                const now = new Date();
-                const m = now.toISOString().substring(0, 7);
-                sortedMonths.push(m);
-            }
-
-            sortedMonths.forEach(m => {
+            filteredCycles.forEach(c => {
                 const opt = document.createElement('option');
-                opt.value = m;
-                opt.text = m;
+                opt.value = c.cycleId; 
+                opt.text = c.label;
                 monthSelect.appendChild(opt);
             });
-            
-            if(sortedMonths.length > 0) monthSelect.value = sortedMonths[0];
-            
+
             renderHistoryMonth();
         }
 
         window.renderHistoryMonth = function() {
-            const selectedMonth = document.getElementById('historyMonthSelect').value;
+            const selectedCycleId = document.getElementById('historyMonthSelect').value;
+            const selectedCategory = document.getElementById('historyCatFilter').value;
+            const selectedCardId = document.getElementById('historyCardFilter').value;
             const container = document.getElementById('historyMonthList');
             container.innerHTML = '';
             
-            let monthTxs = transactions.filter(tx => tx.date && tx.date.startsWith(selectedMonth));
-            if(manageCardFilter) monthTxs = monthTxs.filter(t => t.cardId === manageCardFilter);
+            if(!selectedCycleId) {
+                 container.innerHTML = '<div class="text-center py-10 text-slate-400 text-sm">此年份無紀錄</div>';
+                 document.getElementById('historyMonthTotal').innerText = `$0`;
+                 renderPieChart([]);
+                 return;
+            }
+
+            let periodTxs = [];
+
+            if (currentHistoryMode === 'card') {
+                const cycleDef = currentHistoryCycles.find(c => c.cycleId === selectedCycleId);
+                periodTxs = transactions.filter(t => {
+                    if (t.cardId !== currentHistoryCardId) return false;
+                    // Primary logic: Match staticCycleId
+                    if (t.staticCycleId) {
+                         return t.staticCycleId === selectedCycleId;
+                    }
+                    // Fallback logic for old records
+                    if (cycleDef && cycleDef.start && cycleDef.end) {
+                        const effectiveDate = t.settleDate || t.date;
+                        return effectiveDate >= cycleDef.start && effectiveDate <= cycleDef.end;
+                    }
+                    return false;
+                });
+            } else {
+                periodTxs = transactions.filter(tx => {
+                    const effectiveDate = tx.settleDate || tx.date;
+                    return effectiveDate && effectiveDate.startsWith(selectedCycleId);
+                });
+                // Fallback to manageCardFilter if historyCardFilter is not explicitly set, 
+                // though now historyCardFilter is the primary driver in the modal.
+                const effectiveCardFilter = selectedCardId || manageCardFilter;
+                if(effectiveCardFilter) periodTxs = periodTxs.filter(t => t.cardId === effectiveCardFilter);
+            }
             
-            monthTxs.sort((a,b) => new Date(b.date) - new Date(a.date));
+            // Apply Category Filter
+            if (selectedCategory) {
+                periodTxs = periodTxs.filter(tx => tx.category === selectedCategory);
+            }
+
+            periodTxs.sort((a,b) => new Date(b.settleDate || b.date) - new Date(a.settleDate || a.date));
             
-            const total = monthTxs.reduce((acc, t) => acc + Number(t.amount), 0);
+            const total = periodTxs.reduce((acc, t) => acc + Number(t.amount), 0);
             document.getElementById('historyMonthTotal').innerText = `$${total.toLocaleString()}`;
 
-            if(monthTxs.length === 0) {
-                container.innerHTML = '<div class="text-center py-10 text-slate-400 text-sm">本月無消費紀錄</div>';
+            if(periodTxs.length === 0) {
+                container.innerHTML = '<div class="text-center py-10 text-slate-400 text-sm">無符合的消費紀錄</div>';
             } else {
-                monthTxs.forEach(tx => {
+                periodTxs.forEach(tx => {
                     const card = allCardsData.find(c => c.id === tx.cardId) || { name: '未知卡片', bank: '未知' };
                     
-                    // --- V109 FIX START: PURE DOM CREATION TO ENSURE EVENTS FIRE ---
                     const rowDiv = document.createElement('div');
                     rowDiv.className = "flex justify-between items-center p-3 bg-slate-50 border border-slate-100 rounded-xl tx-row relative group";
                     
-                    // Left Side: Content
                     const leftDiv = document.createElement('div');
                     leftDiv.className = "flex items-center gap-3 overflow-hidden flex-1 cursor-pointer";
                     
                     const catStr = tx.category || "📦 其他";
                     const icon = catStr.split(' ')[0] || "📦";
-                    const settleHint = tx.settleDate ? `<span class="text-indigo-500 font-bold ml-1 text-[10px] bg-indigo-50 px-1 rounded">請款: ${tx.settleDate.slice(5)}</span>` : '';
+                    const settleHint = tx.settleDate ? `<span class="text-indigo-500 font-bold ml-1 text-[10px] bg-indigo-50 px-1 rounded">入帳: ${tx.settleDate.slice(5)}</span>` : '';
 
                     leftDiv.innerHTML = `
                         <div class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-sm shadow-sm flex-shrink-0">${icon}</div>
@@ -1337,10 +1400,8 @@
                             <p class="text-[9px] text-slate-400 mt-0.5 truncate">${tx.date} ${settleHint} ${tx.note ? '· '+tx.note : ''}</p>
                         </div>
                     `;
-                    // Click handler for left side (Edit)
                     leftDiv.addEventListener('click', () => openTransactionModal(tx.id));
 
-                    // Right Side: Amount + Button
                     const rightDiv = document.createElement('div');
                     rightDiv.className = "flex items-center gap-3 flex-shrink-0 ml-2";
                     
@@ -1348,33 +1409,27 @@
                     amountSpan.className = "font-bold text-slate-700 text-sm";
                     amountSpan.innerText = `$${Number(tx.amount).toLocaleString()}`;
                     
-                    // THE BUTTON (Created via DOM to guarantee event binding)
                     const editBtn = document.createElement('button');
                     editBtn.className = "w-7 h-7 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-400 shadow-sm hover:text-indigo-600 hover:border-indigo-200 active:scale-95 transition-all";
                     editBtn.innerHTML = `<i data-lucide="pencil" class="w-3.5 h-3.5"></i>`;
                     
-                    // Click handler for button (Stop Propagation + Edit)
                     editBtn.addEventListener('click', (e) => {
-                        e.stopPropagation(); // Stop bubbling to row
+                        e.stopPropagation(); 
                         openTransactionModal(tx.id);
                     });
 
-                    // Assemble
                     rightDiv.appendChild(amountSpan);
                     rightDiv.appendChild(editBtn);
                     
                     rowDiv.appendChild(leftDiv);
                     rowDiv.appendChild(rightDiv);
                     
-                    // Optional: Row click fallback (though leftDiv covers most)
                     rowDiv.addEventListener('click', () => openTransactionModal(tx.id));
-
                     container.appendChild(rowDiv);
-                    // --- V109 FIX END ---
                 });
             }
-            renderPieChart(monthTxs);
-            lucide.createIcons(); // Refresh icons
+            renderPieChart(periodTxs);
+            lucide.createIcons(); 
         }
 
         window.renderPieChart = function(txs) {
@@ -1395,27 +1450,17 @@
                 '#C9CBCF', '#E7E9ED', '#71B37C', '#EC932F', '#52B3D9'
             ];
 
-            if (historyChartInstance) {
-                historyChartInstance.destroy();
-            }
-
-            if (data.length === 0) {
-                return;
-            }
+            if (historyChartInstance) { historyChartInstance.destroy(); }
+            if (data.length === 0) { return; }
 
             historyChartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: labels,
-                    datasets: [{
-                        data: data,
-                        backgroundColor: colors,
-                        borderWidth: 0
-                    }]
+                    datasets: [{ data: data, backgroundColor: colors, borderWidth: 0 }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    responsive: true, maintainAspectRatio: false,
                     plugins: {
                         legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } },
                         tooltip: { 
@@ -1447,19 +1492,15 @@
             document.getElementById('settingMin').value = settings.min || card.defaultMin || '';
             document.getElementById('settingsModal').classList.remove('hidden');
             
-            // --- FIX START: Show correct default in modal ---
             let defaultBillDay = 1;
             let hasCsvBillDay = false;
             if(currentUser === 'Lynn' && card.lynnBillDay) { defaultBillDay = card.lynnBillDay; hasCsvBillDay = true; }
             if(currentUser === 'Andy' && card.andyBillDay) { defaultBillDay = card.andyBillDay; hasCsvBillDay = true; }
 
             let mode = settings.cycleType;
-            if (!mode) {
-                mode = hasCsvBillDay ? 'bill' : 'month';
-            }
+            if (!mode) { mode = hasCsvBillDay ? 'bill' : 'month'; }
             setCycleMode(mode);
             document.getElementById('settingBillDay').value = settings.billDay || defaultBillDay;
-            // --- FIX END ---
         }
 
         window.setCycleMode = function(mode) {
@@ -1497,7 +1538,6 @@
         window.closeSettingsModal = function() { document.getElementById('settingsModal').classList.add('hidden'); }
 
         // --- SMALL PAY FUNCTIONS ---
-        // V94 Update: New Table Rendering Logic
         window.filterSmallPayByCity = function() {
              const city = document.getElementById('smallPayCitySelect').value;
              document.getElementById('smallPayInput').value = ''; 
@@ -1581,7 +1621,6 @@
             }
         }
 
-        // Keep existing single store check logic for search input
         window.onSmallPayInput = function(val) {
              const list = document.getElementById('smallPaySuggestions');
              if(!val) { list.classList.add('hidden'); return; }
@@ -1612,7 +1651,6 @@
         function checkSmallPay(name) {
              const res = document.getElementById('smallPayResult');
              res.classList.remove('hidden');
-             // Simple check logic: if in DB => Warning
              const found = SMALL_PAYMENT_STORES_DB.some(s => s.name.includes(name));
              if(found) {
                  res.innerHTML = `
@@ -1648,17 +1686,14 @@
             if(!txt) return;
             const content = document.getElementById('aiChatContent');
             
-            // User Msg
             const u = document.createElement('div'); u.className = "flex gap-3 flex-row-reverse animate-in slide-in-from-right-5";
             u.innerHTML = `<div class="bg-indigo-500 text-white p-3 rounded-2xl rounded-tr-none shadow-md text-sm max-w-[80%]">${txt}</div>`;
             content.appendChild(u);
             input.value = '';
             content.scrollTop = content.scrollHeight;
 
-            // AI Reply Logic (Simple Mock)
             setTimeout(() => {
                 let matches = [];
-                // Find cards matching keyword
                 allCardsData.forEach(c => {
                     const hit = c.offers.find(o => o.desc.includes(txt) || o.category.includes(txt) || o.tags.some(t=>t.includes(txt)));
                     if(hit) matches.push({ card: c.name, bank: c.bank, rate: hit.rateStr, desc: hit.desc });
@@ -1673,7 +1708,6 @@
                     reply = `抱歉，我找不到關於「${txt}」的特定優惠。建議刷一般回饋高的卡片，例如 <b>聯邦吉鶴卡</b> (2%)。`;
                 }
 
-                // Small Pay Check
                 const isSmall = SMALL_PAYMENT_STORES_DB.some(s => s.name.includes(txt));
                 if(isSmall) reply += `<br><br><span class="text-red-500 font-bold text-xs">⚠️ 注意：${txt} 可能是小額支付店家，請留意回饋條款。</span>`;
 
