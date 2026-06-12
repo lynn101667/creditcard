@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>毛爸毛媽的信用卡權益 V113 (History Filters & Static Cycles)</title>
+    <title>信用卡權益及記帳本</title>
     
     <!-- PWA Settings -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="毛爸毛媽權益">
+    <meta name="apple-mobile-web-app-title" content="信用卡權益及記帳本">
     
     <!-- Custom Icon -->
     <link rel="icon" type="image/jpeg" href="https://drive.google.com/thumbnail?id=1wV-Acpnvj_3CXb_BHx4HPkLiLeqA6ItS&sz=s256">
@@ -84,42 +84,8 @@
 </head>
 <body class="pb-24 text-slate-700">
 
-    <!-- Login Screen -->
-    <div id="loginScreen" class="fixed inset-0 z-[100] bg-gradient-to-br from-indigo-50 to-pink-50 flex flex-col items-center justify-center p-6 transition-all duration-500">
-        <div class="bg-white/80 backdrop-blur-xl p-8 rounded-[2rem] shadow-xl w-full max-w-xs text-center border border-white/50">
-            <h1 class="text-2xl font-bold text-slate-800 mb-2 serif-font">歡迎回來</h1>
-            <p class="text-xs text-slate-400 mb-8">請選擇身分以解鎖</p>
-            <div id="userSelectArea" class="grid grid-cols-2 gap-4 mb-6">
-                <button onclick="promptPin('Lynn')" class="flex flex-col items-center gap-3 p-4 rounded-2xl border-2 border-transparent bg-white shadow-sm hover:border-pink-300 transition-all hover:-translate-y-1 active:scale-95 group">
-                    <div class="w-16 h-16 rounded-full bg-pink-100 flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition-transform">🐱</div><span class="font-bold text-slate-600">Lynn</span>
-                </button>
-                <button onclick="promptPin('Andy')" class="flex flex-col items-center gap-3 p-4 rounded-2xl border-2 border-transparent bg-white shadow-sm hover:border-blue-300 transition-all hover:-translate-y-1 active:scale-95 group">
-                    <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-4xl shadow-inner group-hover:scale-110 transition-transform">🦁</div><span class="font-bold text-slate-600">Andy</span>
-                </button>
-            </div>
-            <div id="pinArea" class="hidden">
-                <div class="flex items-center justify-center gap-2 mb-6"><div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-2xl shadow-sm" id="pinUserIcon"></div><span class="font-bold text-lg text-slate-700" id="pinUserName"></span></div>
-                <div class="flex justify-center mb-6" id="pinDots"><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div></div>
-                <div class="grid grid-cols-3 gap-3 mb-4">
-                    <button onclick="addPin(1)" class="py-3 rounded-2xl bg-slate-50 font-bold text-lg shadow-sm hover:bg-white active:bg-indigo-50">1</button>
-                    <button onclick="addPin(2)" class="py-3 rounded-2xl bg-slate-50 font-bold text-lg shadow-sm hover:bg-white active:bg-indigo-50">2</button>
-                    <button onclick="addPin(3)" class="py-3 rounded-2xl bg-slate-50 font-bold text-lg shadow-sm hover:bg-white active:bg-indigo-50">3</button>
-                    <button onclick="addPin(4)" class="py-3 rounded-2xl bg-slate-50 font-bold text-lg shadow-sm hover:bg-white active:bg-indigo-50">4</button>
-                    <button onclick="addPin(5)" class="py-3 rounded-2xl bg-slate-50 font-bold text-lg shadow-sm hover:bg-white active:bg-indigo-50">5</button>
-                    <button onclick="addPin(6)" class="py-3 rounded-2xl bg-slate-50 font-bold text-lg shadow-sm hover:bg-white active:bg-indigo-50">6</button>
-                    <button onclick="addPin(7)" class="py-3 rounded-2xl bg-slate-50 font-bold text-lg shadow-sm hover:bg-white active:bg-indigo-50">7</button>
-                    <button onclick="addPin(8)" class="py-3 rounded-2xl bg-slate-50 font-bold text-lg shadow-sm hover:bg-white active:bg-indigo-50">8</button>
-                    <button onclick="addPin(9)" class="py-3 rounded-2xl bg-slate-50 font-bold text-lg shadow-sm hover:bg-white active:bg-indigo-50">9</button>
-                    <button onclick="resetPinUI()" class="py-3 rounded-2xl text-slate-400 font-bold text-xs">取消</button>
-                    <button onclick="addPin(0)" class="py-3 rounded-2xl bg-slate-50 font-bold text-lg shadow-sm hover:bg-white active:bg-indigo-50">0</button>
-                    <button onclick="deletePin()" class="py-3 rounded-2xl text-indigo-500"><i data-lucide="delete" class="w-6 h-6 mx-auto"></i></button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Main App -->
-    <div id="appContainer" class="hidden opacity-0 transition-opacity duration-500">
+    <div id="appContainer" class="transition-opacity duration-500">
         <!-- Toast updated for background sync status -->
         <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg z-[80] transition-opacity duration-300 opacity-0 pointer-events-none">✅ 已更新</div>
         <div id="loadingOverlay" class="fixed inset-0 loading-overlay hidden flex flex-col items-center justify-center">
@@ -131,8 +97,7 @@
             <div class="max-w-md mx-auto px-5 py-4">
                 <div class="flex justify-between items-center mb-2">
                     <div class="flex items-center gap-2">
-                        <h1 class="text-indigo-600 text-xl font-bold flex items-center gap-2 tracking-wide" onclick="window.scrollTo({top:0, behavior:'smooth'})"><i data-lucide="paw-print" class="w-5 h-5 text-pink-500"></i> <span id="appTitle">毛爸毛媽的信用卡權益</span></h1>
-                        <span id="userBadge" class="text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-500 font-bold hidden shadow-sm border border-slate-200"></span>
+                        <h1 class="text-indigo-600 text-xl font-bold flex items-center gap-2 tracking-wide" onclick="window.scrollTo({top:0, behavior:'smooth'})"><i data-lucide="paw-print" class="w-5 h-5 text-pink-500"></i> <span id="appTitle">信用卡權益及記帳本</span></h1>
                         <!-- Sync indicator -->
                         <div id="syncIndicator" class="hidden w-2 h-2 rounded-full bg-indigo-500 animate-pulse" title="背景同步中"></div>
                     </div>
@@ -154,7 +119,10 @@
                     <div class="flex gap-2">
                         <div class="relative flex-1"><select id="manageCardFilter" class="w-full bg-white/90 border border-indigo-100 rounded-xl py-2.5 pl-3 pr-8 text-xs font-bold text-slate-600 outline-none shadow-sm focus:ring-2 focus:ring-indigo-200"><option value="">💳 所有信用卡</option></select></div>
                         <button onclick="openCardSortModal()" class="flex-none w-11 h-11 bg-white border border-indigo-50 text-indigo-500 rounded-xl shadow-sm flex items-center justify-center active:scale-95 transition-transform hover:bg-indigo-50"><i data-lucide="list-ordered" class="w-5 h-5"></i></button>
-                        <button onclick="window.openHistoryModal()" class="flex-none px-4 py-2.5 bg-indigo-500 text-white rounded-xl shadow-md text-xs font-bold flex items-center gap-1 active:scale-95 transition-transform hover:bg-indigo-600"><i data-lucide="receipt" class="w-4 h-4"></i> 歷史總覽</button>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                        <button onclick="openBillDatesModal()" class="flex-1 px-4 py-2.5 bg-white border border-indigo-100 text-indigo-600 rounded-xl shadow-sm text-xs font-bold flex items-center justify-center gap-1 active:scale-95 transition-transform hover:bg-indigo-50"><i data-lucide="calendar-days" class="w-4 h-4"></i> 結帳日總覽</button>
+                        <button onclick="window.openHistoryModal()" class="flex-1 px-4 py-2.5 bg-indigo-500 text-white rounded-xl shadow-md text-xs font-bold flex items-center justify-center gap-1 active:scale-95 transition-transform hover:bg-indigo-600"><i data-lucide="receipt" class="w-4 h-4"></i> 歷史總覽</button>
                     </div>
                 </div>
                 <div id="smallPayControls" class="hidden fade-in mt-2 space-y-3"><div class="bg-white p-4 rounded-2xl border border-orange-100 shadow-sm relative"><div class="flex justify-between items-start mb-2"><div class="flex items-center gap-2"><i data-lucide="shield-alert" class="w-5 h-5 text-orange-500"></i><h2 class="text-sm font-bold text-slate-800">小額支付平台查詢</h2></div><button onclick="document.getElementById('smallPayDbModal').classList.remove('hidden')" class="text-[10px] text-indigo-500 underline">手動匯入</button></div><div class="relative mb-3"><div class="relative bg-slate-50 rounded-xl shadow-inner border border-slate-200 flex items-center"><i data-lucide="search" class="absolute left-3 w-4 h-4 text-slate-400"></i><input type="text" id="smallPayInput" placeholder="輸入品牌 (如: 鶴茶樓)..." autocomplete="off" class="w-full pl-10 pr-10 py-3 rounded-xl border-none outline-none bg-transparent text-slate-700 placeholder-slate-400 text-sm font-bold" oninput="onSmallPayInput(this.value)"><button onclick="clearSmallPaySearch()" class="absolute right-3 text-slate-300 hover:text-slate-500 p-1"><i data-lucide="x" class="w-4 h-4"></i></button></div><div id="smallPaySuggestions" class="suggestions-box hidden"></div></div><div class="relative"><select id="smallPayCitySelect" onchange="filterSmallPayByCity()" class="w-full bg-orange-50/50 border border-orange-100 rounded-xl py-2.5 pl-3 pr-8 text-xs font-bold text-slate-600 outline-none focus:ring-2 focus:ring-orange-200"><option value="">🏙️ 依縣市查詢店家</option></select></div></div><div id="smallPayResult" class="hidden animate-in fade-in slide-in-from-top-2"></div><div class="text-[10px] text-slate-300 text-center mt-2" id="smallPayStats">資料載入中...</div></div>
@@ -206,26 +174,103 @@
         </div>
     </div>
 
-    <div id="cloudModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in text-center">
-            <h3 class="font-bold text-lg mb-4 text-slate-800 serif-font text-center">使用者設定</h3>
-            <div class="bg-indigo-50 p-4 rounded-xl mb-5 border border-indigo-100">
-                <label class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-3 block text-center">選擇您的身分</label>
-                <div class="grid grid-cols-2 gap-3">
-                    <button id="btnUserLynn" onclick="switchUser('Lynn')" class="py-3 text-sm font-bold rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-pink-50 transition-all flex flex-col items-center gap-1 shadow-sm"><span class="text-2xl mb-1">🐱</span> Lynn</button>
-                    <button id="btnUserAndy" onclick="switchUser('Andy')" class="py-3 text-sm font-bold rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-blue-50 transition-all flex flex-col items-center gap-1 shadow-sm"><span class="text-2xl mb-1">🦁</span> Andy</button>
+    <!-- Card Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-slate-900/60 z-[65] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl w-full max-w-xs shadow-2xl flex flex-col overflow-hidden">
+            <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-indigo-50">
+                <h3 class="font-bold text-lg text-slate-800" id="settingsCardName">卡片設定</h3>
+                <button onclick="closeSettingsModal()" class="p-1 hover:bg-white/50 rounded-full"><i data-lucide="x" class="w-5 h-5 text-slate-500"></i></button>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="text-xs font-bold text-slate-400 mb-2 block">結帳日設定模式</label>
+                    <div class="flex gap-2">
+                        <button id="btnCycleMonth" onclick="setCycleMode('month')" class="flex-1 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors">日曆月</button>
+                        <button id="btnCycleBill" onclick="setCycleMode('bill')" class="flex-1 py-2 rounded-xl text-xs font-bold border border-slate-200 transition-colors">帳單月</button>
+                    </div>
+                </div>
+                <div id="billDateInputGroup" class="hidden flex-col">
+                    <label class="text-xs font-bold text-slate-400 mb-2 block">每月結帳日</label>
+                    <input type="number" id="settingBillDay" min="1" max="31" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-indigo-200" placeholder="例如: 15">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-400 mb-2 block">回饋上限設定 ($)</label>
+                    <input type="number" id="settingCap" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-indigo-200" placeholder="未設定">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-400 mb-2 block">低消門檻設定 ($)</label>
+                    <input type="number" id="settingMin" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-indigo-200" placeholder="未設定">
                 </div>
             </div>
-            <div class="space-y-3"><div><label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">記帳同步資料庫 (GAS)</label><input type="text" id="gasUrl" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 outline-none" placeholder="https://script.google.com/..." readonly><p class="text-[9px] text-slate-300 mt-1">* 系統自動帶入，無需修改</p></div></div>
-            <div class="flex gap-2 mt-6"><button onclick="document.getElementById('cloudModal').classList.add('hidden')" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">關閉</button><button onclick="syncWithCloud(true)" class="flex-1 py-3 rounded-xl bg-indigo-600 text-white font-bold shadow-md text-sm">立即同步</button></div>
+            <div class="p-4 border-t border-slate-100 bg-slate-50">
+                <button onclick="saveCardSettings()" class="w-full py-3 rounded-xl bg-indigo-600 text-white font-bold shadow-md hover:bg-indigo-700 active:scale-95 transition-transform">儲存設定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Min Requirement Transactions Modal -->
+    <div id="minTxModal" class="fixed inset-0 bg-slate-900/60 z-[65] hidden flex flex-col justify-end sm:justify-center backdrop-blur-sm">
+        <div class="bg-white w-full sm:max-w-sm sm:mx-auto sm:rounded-3xl rounded-t-3xl h-[70vh] sm:h-[500px] flex flex-col shadow-2xl animate-in slide-in-from-bottom-10">
+            <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-orange-50 sm:rounded-t-3xl rounded-t-3xl">
+                <div>
+                    <h3 class="font-bold text-lg text-orange-600" id="minTxCardName">一般/低消 明細</h3>
+                    <p class="text-[10px] text-orange-400 mt-0.5">僅顯示被標記為「一般/低消」的消費</p>
+                </div>
+                <button onclick="closeMinTxModal()" class="p-1 hover:bg-white/50 rounded-full"><i data-lucide="x" class="w-5 h-5 text-orange-500"></i></button>
+            </div>
+            <div class="p-4 border-b border-slate-50 flex gap-2">
+                <select id="minTxCycleSelect" onchange="renderMinTxList()" class="flex-1 bg-white border border-slate-200 rounded-xl py-2 pl-3 pr-8 text-sm font-bold text-slate-600 outline-none focus:ring-2 focus:ring-orange-200">
+                </select>
+            </div>
+            <div class="flex-1 overflow-y-auto p-4 bg-slate-50" id="minTxListContainer">
+                <!-- 內容由 JS 產生 -->
+            </div>
+            <div class="p-4 bg-white border-t border-slate-100 flex justify-between items-center pb-[calc(1rem+env(safe-area-inset-bottom))]">
+                <span class="text-xs font-bold text-slate-500">本期累積低消</span>
+                <span class="text-lg font-bold text-orange-500" id="minTxTotalAmount">$0</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bill Dates Modal -->
+    <div id="billDatesModal" class="fixed inset-0 bg-slate-900/60 z-[65] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl w-full max-w-sm shadow-2xl flex flex-col max-h-[80vh]">
+            <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-indigo-50 rounded-t-3xl">
+                <h3 class="font-bold text-lg text-slate-800">結帳日總覽</h3>
+                <button onclick="closeBillDatesModal()" class="p-1 hover:bg-white/50 rounded-full"><i data-lucide="x" class="w-5 h-5 text-slate-500"></i></button>
+            </div>
+            <div class="p-3 bg-orange-50 text-orange-600 text-[11px] font-bold text-center border-b border-orange-100">
+                ‼️ 表示當期有消費，但累積金額尚未達到低消門檻
+            </div>
+            <div id="billDatesList" class="flex-1 overflow-y-auto p-3 space-y-2 bg-slate-50">
+                <!-- Items injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <div id="cloudModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in text-center">
+            <h3 class="font-bold text-lg mb-4 text-slate-800 serif-font text-center">系統設定</h3>
+            <div class="space-y-3">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 block">記帳同步資料庫 (GAS)</label>
+                    <input type="text" id="gasUrl" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 outline-none" placeholder="https://script.google.com/..." onchange="updateGasUrl(this.value)">
+                    <p class="text-[9px] text-slate-300 mt-1">* 貼上您的 Google Apps Script 網址以啟用雲端同步</p>
+                </div>
+            </div>
+            <div class="flex gap-2 mt-6">
+                <button onclick="document.getElementById('cloudModal').classList.add('hidden')" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">關閉</button>
+                <button onclick="syncWithCloud(true)" class="flex-1 py-3 rounded-xl bg-indigo-600 text-white font-bold shadow-md text-sm">立即同步</button>
+            </div>
         </div>
     </div>
 
     <div id="smallPayDbModal" class="fixed inset-0 bg-slate-900/60 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in"><h3 class="font-bold text-lg mb-1 text-slate-800 serif-font">匯入小額支付完整名單</h3><p class="text-xs text-slate-400 mb-4">貼上 CSV 網址</p><input type="text" id="smallPayCsvUrl" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 outline-none mb-2" placeholder="https://docs.google.com/..."><div class="flex gap-2"><button onclick="document.getElementById('smallPayDbModal').classList.add('hidden')" class="flex-1 py-2 rounded-xl bg-slate-100 text-slate-500 font-bold text-sm">取消</button><button onclick="saveSmallPayDb()" class="flex-1 py-2 rounded-xl bg-indigo-600 text-white font-bold shadow-md text-sm">匯入</button></div></div></div>
-    <div id="deleteConfirmModal" class="fixed inset-0 bg-slate-900/60 z-[70] hidden flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in transform transition-all scale-100"><div class="flex flex-col items-center text-center mb-4"><div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-3"><i data-lucide="trash-2" class="w-6 h-6 text-red-500"></i></div><h3 class="font-bold text-lg text-slate-800">確定要刪除嗎？</h3><p class="text-xs text-slate-500 mt-1">刪除後將無法復原。</p></div><div class="flex gap-3"><button onclick="document.getElementById('deleteConfirmModal').classList.add('hidden')" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold text-sm">取消</button><button onclick="executeDelete()" class="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold shadow-md text-sm">確認刪除</button></div></div></div>
+    
+    <div id="deleteConfirmModal" class="fixed inset-0 bg-slate-900/60 z-[80] hidden flex items-center justify-center p-4 backdrop-blur-sm"><div class="bg-white rounded-3xl p-6 w-full max-w-xs shadow-2xl fade-in transform transition-all scale-100"><div class="flex flex-col items-center text-center mb-4"><div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-3"><i data-lucide="trash-2" class="w-6 h-6 text-red-500"></i></div><h3 class="font-bold text-lg text-slate-800">確定要刪除嗎？</h3><p class="text-xs text-slate-500 mt-1">刪除後將無法復原。</p></div><div class="flex gap-3"><button onclick="document.getElementById('deleteConfirmModal').classList.add('hidden')" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold text-sm">取消</button><button onclick="executeDelete()" class="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold shadow-md text-sm">確認刪除</button></div></div></div>
     
     <!-- Transaction Modal -->
-    <div id="transactionModal" class="fixed inset-0 bg-slate-900/60 z-[60] hidden flex items-end sm:items-center justify-center backdrop-blur-sm transition-opacity">
+    <div id="transactionModal" class="fixed inset-0 bg-slate-900/60 z-[75] hidden flex items-end sm:items-center justify-center backdrop-blur-sm transition-opacity">
         <div class="bg-white w-full sm:max-w-sm rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl animate-in slide-in-from-bottom-10 duration-300 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold text-slate-800 serif-font" id="txModalTitle">記一筆消費</h3><button onclick="closeTransactionModal()" class="bg-slate-100 p-2 rounded-full text-slate-500 hover:bg-slate-200"><i data-lucide="x" class="w-5 h-5"></i></button></div>
             <div class="space-y-4">
@@ -304,11 +349,6 @@
         const DEFAULT_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQhVkQJhNqPQAxXv-q0ethYeViFm69TyPnqRTmejQdwqgKtOvOLRbZ7toKBBTq7rWiqkQFMtGxvvWpC/pub?output=csv";
         const DEFAULT_SMALL_PAY_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSP7uOSfbfEnZx_TsDltCox5ubDR3f5ofOK7g-WEAp-y38coNSnY_VHfY1WuI8tqA/pub?output=csv";
         
-        const USER_CONFIGS = {
-            'Lynn': 'https://script.google.com/macros/s/AKfycbx4fis6JsM0YYp1KUzRb0xAPnhJPqIgR-MVtc8AGWjLjbFCXHWT5xW2JqAsGiw_B0d1IQ/exec',
-            'Andy': 'https://script.google.com/macros/s/AKfycbzBHPtqIfPWxbAmF6B7yQYT8jd4btfJycPiihUhqpLZwMXNRTM5PUsgURumPvpsVMNXHA/exec'
-        };
-
         const TX_CATEGORIES = ["🍽️ 餐飲", "🥦 食材", "🛍️ 購物", "🎬 娛樂", "💊 醫療", "🚌 交通", "⛽ 加油", "🐾 寵物", "✈️ 旅遊", "🛡️ 保險", "📚 課程", "💰 繳費", "📦 其他"];
         const TAIWAN_CITIES = ["台北市", "新北市", "基隆市", "桃園市", "新竹市", "新竹縣", "苗栗縣", "台中市", "彰化縣", "南投縣", "雲林縣", "嘉義市", "嘉義縣", "台南市", "高雄市", "屏東縣", "宜蘭縣", "花蓮縣", "台東縣"];
         
@@ -318,16 +358,14 @@
         let allCardsData = [], uniqueBanks = [];
         let transactions = [];
         let cardSettings = {};
-        let currentUser = localStorage.getItem('cc_current_user') || null;
-        let API_URL = "";
+        let currentUser = localStorage.getItem('cc_current_user') || 'Lynn';
+        let API_URL = localStorage.getItem('cc_gas_url') || "https://script.google.com/macros/s/AKfycbx4fis6JsM0YYp1KUzRb0xAPnhJPqIgR-MVtc8AGWjLjbFCXHWT5xW2JqAsGiw_B0d1IQ/exec";
 
         let currentView = 'manage'; 
-        let showActiveOnly = false;
+        let showActiveOnly = true;
         let editingTransactionId = null;
         let currentBankFilter = '', currentCardFilter = '', manageCardFilter = '';
         let editingCardId = null;
-        let tempPin = '';
-        let pendingUser = '';
         let cardSortOrder = []; 
         let sortableInstance = null; // For Drag and Drop
         let historyChartInstance = null; // For ChartJS
@@ -338,6 +376,10 @@
         let currentHistoryCycles = [];
         let currentHistoryYears = [];
         
+        // Settings for Min Requirement View
+        let currentMinCardId = null;
+        let currentMinCycles = [];
+        
         let currentSmallPayResults = [];
         let currentSmallPayPage = 1;
         const SMALL_PAY_ITEMS_PER_PAGE = 20;
@@ -346,6 +388,7 @@
 
         // --- INIT LOGIC ---
         function init() {
+            localStorage.setItem('cc_current_user', currentUser);
             loadSmallPayCsv(DEFAULT_SMALL_PAY_CSV_URL);
             
             document.getElementById('txDate').valueAsDate = new Date();
@@ -358,28 +401,26 @@
                 complete: (results) => { 
                     allCardsData = processRawData(results.data); 
                     initDropdowns(); 
-                    checkLoginAndRender();
+                    loadUserData();
+                    switchTab('manage');
                 },
                 error: () => { 
                     console.error("CSV Loaded Failed");
                     allCardsData = []; 
                     initDropdowns(); 
-                    checkLoginAndRender();
+                    loadUserData();
+                    switchTab('manage');
                 }
             });
         }
         
-        function checkLoginAndRender() {
-            const app = document.getElementById('appContainer');
-            const login = document.getElementById('loginScreen');
-
-            app.classList.add('hidden', 'opacity-0');
-            login.classList.remove('hidden', 'opacity-0', 'pointer-events-none');
-            resetPinUI();
+        // Helper: Check if item is in small payment DB
+        window.checkIsSmallPayment = function(name) {
+            if(!name) return false;
+            return SMALL_PAYMENT_STORES_DB.some(s => name.includes(s.name) || s.name.includes(name));
         }
         
         // --- HELPER: GET CYCLE INFO ---
-        // V113: Returns cycleId for static binding to transaction
         window.getCycleInfo = function(dateObj, cycleType, billDay) {
             if(isNaN(dateObj.getTime())) dateObj = new Date();
             const year = dateObj.getFullYear(), month = dateObj.getMonth(), day = dateObj.getDate();
@@ -414,10 +455,8 @@
             if (!card) return null;
             
             const settings = cardSettings[card.id] || {};
-            let defaultBillDay = 1, hasCsvBillDay = false;
-            if(currentUser === 'Lynn' && card.lynnBillDay) { defaultBillDay = card.lynnBillDay; hasCsvBillDay = true; }
-            if(currentUser === 'Andy' && card.andyBillDay) { defaultBillDay = card.andyBillDay; hasCsvBillDay = true; }
-            let cycleType = settings.cycleType || (hasCsvBillDay ? 'bill' : 'month');
+            let defaultBillDay = 1;
+            let cycleType = settings.cycleType || 'month';
             const billDay = settings.billDay || defaultBillDay;
 
             const dateObj = new Date(dateStr);
@@ -452,28 +491,9 @@
         }
         window.addEventListener('scroll', checkScroll);
 
-        window.switchUser = function(user) {
-            currentUser = user;
-            localStorage.setItem('cc_current_user', user);
-            API_URL = USER_CONFIGS[user];
-            
-            cardSettings = JSON.parse(localStorage.getItem(getStorageKey('card_settings')) || '{}');
-            transactions = JSON.parse(localStorage.getItem(getStorageKey('transactions')) || '[]');
-            cardSortOrder = JSON.parse(localStorage.getItem(getStorageKey('card_order')) || '[]'); 
-            
-            updateUserUI();
-            document.getElementById('gasUrl').value = API_URL;
-            
-            const btnLynn = document.getElementById('btnUserLynn');
-            const btnAndy = document.getElementById('btnUserAndy');
-            
-            if(btnLynn) btnLynn.className = user === 'Lynn' ? "py-3 text-sm font-bold rounded-xl border-2 border-pink-400 bg-pink-50 text-pink-600 transition-all flex flex-col items-center gap-1 shadow-sm" : "py-3 text-sm font-bold rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-pink-50 transition-all flex flex-col items-center gap-1 shadow-sm";
-            if(btnAndy) btnAndy.className = user === 'Andy' ? "py-3 text-sm font-bold rounded-xl border-2 border-blue-400 bg-blue-50 text-blue-600 transition-all flex flex-col items-center gap-1 shadow-sm" : "py-3 text-sm font-bold rounded-xl border border-slate-200 bg-white text-slate-500 hover:bg-blue-50 transition-all flex flex-col items-center gap-1 shadow-sm";
-
-            pruneOldData();
-            syncWithCloud(false); 
-            renderView();
-            showToast(`已切換為 ${user}`);
+        window.updateGasUrl = function(val) {
+            API_URL = val;
+            localStorage.setItem('cc_gas_url', val);
         }
 
         function pruneOldData() {
@@ -495,101 +515,16 @@
             }
         }
 
-        // --- LOGIN LOGIC ---
-        window.promptPin = function(user) {
-            pendingUser = user;
-            tempPin = '';
-            document.getElementById('userSelectArea').classList.add('hidden');
-            document.getElementById('pinArea').classList.remove('hidden');
-            document.getElementById('pinUserName').innerText = user;
-            document.getElementById('pinUserIcon').innerText = user === 'Lynn' ? '🐱' : '🦁';
-            updatePinDots();
-        }
-
-        window.resetPinUI = function() {
-            tempPin = '';
-            document.getElementById('pinArea').classList.add('hidden');
-            document.getElementById('userSelectArea').classList.remove('hidden');
-        }
-
-        window.addPin = function(num) {
-            if(tempPin.length < 4) {
-                tempPin += num;
-                updatePinDots();
-                if(tempPin.length === 4) checkPin();
-            }
-        }
-
-        window.deletePin = function() {
-            tempPin = tempPin.slice(0, -1);
-            updatePinDots();
-        }
-
-        window.updatePinDots = function() {
-            const dots = document.querySelectorAll('.pin-dot');
-            dots.forEach((dot, index) => {
-                if(index < tempPin.length) dot.classList.add('active');
-                else dot.classList.remove('active');
-            });
-        }
-
-        window.checkPin = function() {
-            if(tempPin === '0515') {
-                loginSuccess(pendingUser);
-            } else {
-                const pinArea = document.getElementById('pinArea');
-                pinArea.classList.add('animate-shake');
-                setTimeout(() => {
-                    pinArea.classList.remove('animate-shake');
-                    tempPin = '';
-                    updatePinDots();
-                }, 500);
-            }
-        }
-
-        window.loginSuccess = function(user) {
-            switchUser(user);
-            document.getElementById('loginScreen').classList.add('opacity-0', 'pointer-events-none');
-            setTimeout(() => {
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('appContainer').classList.remove('hidden');
-                switchTab('manage'); 
-                setTimeout(() => document.getElementById('appContainer').classList.remove('opacity-0'), 50);
-            }, 500);
-        }
-
-        window.logout = function() {
-            document.getElementById('cloudModal').classList.add('hidden');
-            document.getElementById('appContainer').classList.add('opacity-0');
-            
-            setTimeout(() => {
-                document.getElementById('appContainer').classList.add('hidden');
-                document.getElementById('loginScreen').classList.remove('hidden', 'opacity-0', 'pointer-events-none');
-                resetPinUI();
-            }, 500);
-            
-            currentUser = null;
-            transactions = [];
-        }
-
         function loadUserData() {
-            if (!currentUser) return;
+            document.getElementById('gasUrl').value = API_URL;
             cardSettings = JSON.parse(localStorage.getItem(getStorageKey('card_settings')) || '{}');
             transactions = JSON.parse(localStorage.getItem(getStorageKey('transactions')) || '[]');
             cardSortOrder = JSON.parse(localStorage.getItem(getStorageKey('card_order')) || '[]'); 
-            document.getElementById('gasUrl').value = API_URL;
             pruneOldData();
-            syncWithCloud(false);
-        }
-
-        function updateUserUI() {
-            const badge = document.getElementById('userBadge');
-            if (currentUser === 'Lynn') {
-                badge.innerText = "🐱 Lynn";
-                badge.classList.remove('hidden');
-            } else if (currentUser === 'Andy') {
-                badge.innerText = "🦁 Andy";
-                badge.classList.remove('hidden');
+            if (API_URL) {
+                syncWithCloud(false);
+            } else {
+                renderView();
             }
         }
 
@@ -611,7 +546,7 @@
                     color: getBankColor(bank), 
                     offers: [], 
                     defaultMin: 0, defaultCap: 0, domesticBase: '', foreignBase: '',
-                    lynnBillDay: 0, andyBillDay: 0, expiryDate: '' 
+                    expiryDate: '' 
                 });
                 const obj = map.get(id);
                 
@@ -629,8 +564,6 @@
                 const domBase = get(['國內基礎回饋', '國內基礎', 'domestic']); if(domBase) obj.domesticBase = domBase;
                 const forBase = get(['國外基礎回饋', '國外基礎', 'foreign']); if(forBase) obj.foreignBase = forBase;
                 const baseCap = get(['基礎回饋上限', 'base_cap']); if (baseCap) obj.baseCap = baseCap;
-                const lynnDay = get(['Lynn結帳日', 'lynn_bill']); if (lynnDay) { const n = parseInt(String(lynnDay).replace(/[^\d]/g, '')); if(!isNaN(n)) obj.lynnBillDay = n; }
-                const andyDay = get(['Andy結帳日', 'andy_bill']); if (andyDay) { const n = parseInt(String(andyDay).replace(/[^\d]/g, '')); if(!isNaN(n)) obj.andyBillDay = n; }
                 const expiry = get(['權益期限', 'expiry', 'valid_until']); if (expiry) obj.expiryDate = expiry;
 
                 const cat = get(['類別', 'category']);
@@ -673,7 +606,10 @@
         }
 
         window.syncWithCloud = async function(forceShowLoading = true) { 
-            if(!API_URL) return; 
+            if(!API_URL) {
+                if (forceShowLoading) showToast('請先設定雲端同步網址');
+                return;
+            }
             
             const hasData = transactions.length > 0;
             if (forceShowLoading || !hasData) {
@@ -702,7 +638,7 @@
                         let rawCard = getValue(tx, ['cardId', 'card']);
                         let rawId = getValue(tx, ['id']);
                         let rawTypes = getValue(tx, ['types']);
-                        let rawStaticCycleId = getValue(tx, ['staticCycleId', 'cycleId']); // V113 support
+                        let rawStaticCycleId = getValue(tx, ['staticCycleId', 'cycleId']); 
 
                         let amt = parseFloat(rawAmt);
                         if(isNaN(amt)) amt = 0;
@@ -724,7 +660,6 @@
                         if (typeof types === 'string') { try { types = JSON.parse(types); } catch(e) { types = []; } }
                         if (!Array.isArray(types)) types = [];
                         
-                        // Backwards compatibility: calculate static cycle if missing
                         let staticCycleId = rawStaticCycleId;
                         if(!staticCycleId && rawCard && (sd || d)) {
                              staticCycleId = getCardCycleIdForDate(rawCard, sd || d);
@@ -868,20 +803,12 @@
                 const settings = cardSettings[card.id] || {};
                 
                 let defaultBillDay = 1;
-                let hasCsvBillDay = false;
-
-                if(currentUser === 'Lynn' && card.lynnBillDay) { defaultBillDay = card.lynnBillDay; hasCsvBillDay = true; }
-                if(currentUser === 'Andy' && card.andyBillDay) { defaultBillDay = card.andyBillDay; hasCsvBillDay = true; }
-
-                let cycleType = settings.cycleType;
-                if (!cycleType) cycleType = hasCsvBillDay ? 'bill' : 'month';
-                
+                let cycleType = settings.cycleType || 'month';
                 const billDay = settings.billDay || defaultBillDay;
 
                 const currentCycleInfo = getCycleInfo(new Date(), cycleType, billDay);
                 
                 const cardTxs = transactions.filter(t => {
-                    // Match current cycle based on static ID (if it exists) OR date range fallback
                     if (t.staticCycleId && t.cardId === card.id) {
                          return t.staticCycleId === currentCycleInfo.cycleId;
                     }
@@ -946,7 +873,16 @@
                     const minPct = Math.min((card.totalMin / card.min) * 100, 100);
                     const minColor = minPct >= 100 ? 'bg-emerald-500' : 'bg-orange-400';
                     const minText = minPct >= 100 ? '✅ 已達標' : `尚差 $${(card.min - card.totalMin).toLocaleString()}`;
-                    barsHtml += `<div class="mb-2"><div class="flex justify-between text-[10px] font-bold text-slate-400 mb-1"><span>低消門檻 (${Math.round(minPct)}%)</span><span class="${minPct >= 100 ? 'text-emerald-500' : 'text-orange-400'}">${minText}</span></div><div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden"><div class="h-full ${minColor} transition-all duration-500" style="width:${minPct}%"></div></div></div>`;
+                    barsHtml += `
+                    <div class="mb-2 cursor-pointer hover:bg-slate-50 p-1 -mx-1 rounded transition-colors group" onclick="openMinTxModal('${card.id}')">
+                        <div class="flex justify-between text-[10px] font-bold text-slate-400 mb-1">
+                            <span class="group-hover:text-orange-500 transition-colors flex items-center gap-1">低消門檻 (${Math.round(minPct)}%) <i data-lucide="chevron-right" class="w-3 h-3"></i></span>
+                            <span class="${minPct >= 100 ? 'text-emerald-500' : 'text-orange-400'}">${minText}</span>
+                        </div>
+                        <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full ${minColor} transition-all duration-500" style="width:${minPct}%"></div>
+                        </div>
+                    </div>`;
                 }
                 
                 let txListHtml = '';
@@ -954,15 +890,18 @@
                     txListHtml = `<div class="mt-4 pt-3 border-t border-slate-50 space-y-2">`;
                     card.cardTxs.forEach(tx => {
                         const dateDisplay = tx.settleDate ? `<span class="text-indigo-500" title="入帳日">${tx.settleDate.slice(5)}</span>` : tx.date.slice(5);
+                        let txName = tx.item || tx.category;
+                        let smallPayWarn = window.checkIsSmallPayment(txName) ? `<span title="可能為小額支付" class="text-[10px]">⚠️</span>` : '';
+                        
                         txListHtml += `
-                            <div class="flex justify-between items-center text-xs group">
-                                <div class="flex items-center gap-2 overflow-hidden">
+                            <div class="flex justify-between items-center text-xs group cursor-pointer" onclick="openTransactionModal('${tx.id}')">
+                                <div class="flex items-center gap-2 overflow-hidden flex-1">
                                     <span class="text-slate-400 font-mono flex-shrink-0">${dateDisplay}</span>
-                                    <span class="text-slate-700 truncate font-bold">${tx.item || tx.category}</span>
+                                    <span class="text-slate-700 truncate font-bold flex items-center gap-1">${txName} ${smallPayWarn}</span>
                                 </div>
-                                <div class="flex items-center gap-2 flex-shrink-0">
+                                <div class="flex items-center gap-2 flex-shrink-0 ml-2">
                                     <span class="font-bold text-slate-600">$${Number(tx.amount).toLocaleString()}</span>
-                                    <button onclick="openTransactionModal('${tx.id}')" class="text-slate-300 hover:text-indigo-500 p-1"><i data-lucide="pencil" class="w-3 h-3"></i></button>
+                                    <button class="text-slate-300 hover:text-indigo-500 p-1"><i data-lucide="pencil" class="w-3 h-3"></i></button>
                                 </div>
                             </div>
                         `;
@@ -1123,7 +1062,6 @@
         window.openDeleteConfirm = function() { document.getElementById('deleteConfirmModal').classList.remove('hidden'); }
         
         window.saveTransaction = async function() {
-            if (!currentUser) return alert('請先選擇使用者身分 (設定 > 選擇身分)');
             const cardId = document.getElementById('txCardSelect').value;
             const amount = parseFloat(document.getElementById('txAmount').value);
             const date = document.getElementById('txDate').value;
@@ -1148,7 +1086,6 @@
                 const index = transactions.findIndex(t => String(t.id) === String(editingTransactionId));
                 if (index !== -1) { 
                     txData.id = editingTransactionId; 
-                    // Preserve old staticCycleId if dates didn't change (optional, but recalculating is usually safer)
                     transactions[index] = txData; 
                 }
             } else {
@@ -1159,10 +1096,14 @@
 
             localStorage.setItem(getStorageKey('transactions'), JSON.stringify(transactions));
             renderView();
+            
             if(!document.getElementById('historyModal').classList.contains('hidden')) { 
-                // Only re-render list, preserve filters
                 renderHistoryMonth(); 
             }
+            if(!document.getElementById('minTxModal').classList.contains('hidden')) {
+                renderMinTxList();
+            }
+            
             closeTransactionModal();
             showToast('🔄 雲端儲存中...', 2000);
             
@@ -1173,7 +1114,6 @@
         }
 
         window.executeDelete = async function() {
-            if (!currentUser) return;
             document.getElementById('deleteConfirmModal').classList.add('hidden'); 
             
             const txId = editingTransactionId;
@@ -1182,6 +1122,7 @@
             
             renderView();
             if(!document.getElementById('historyModal').classList.contains('hidden')) { renderHistoryMonth(); }
+            if(!document.getElementById('minTxModal').classList.contains('hidden')) { renderMinTxList(); }
             closeTransactionModal();
             showToast('🗑️ 已刪除 (同步中...)');
 
@@ -1225,10 +1166,8 @@
                 cardFilter.classList.add('hidden'); // Hide filter if we are already viewing a specific card's history
                 
                 const settings = cardSettings[card.id] || {};
-                let defaultBillDay = 1, hasCsvBillDay = false;
-                if(currentUser === 'Lynn' && card.lynnBillDay) { defaultBillDay = card.lynnBillDay; hasCsvBillDay = true; }
-                if(currentUser === 'Andy' && card.andyBillDay) { defaultBillDay = card.andyBillDay; hasCsvBillDay = true; }
-                let cycleType = settings.cycleType || (hasCsvBillDay ? 'bill' : 'month');
+                let defaultBillDay = 1;
+                let cycleType = settings.cycleType || 'month';
                 const billDay = settings.billDay || defaultBillDay;
 
                 const cycleMap = new Map();
@@ -1238,7 +1177,6 @@
                 transactions.forEach(tx => {
                     if (tx.cardId === cardId) {
                         if (tx.staticCycleId) {
-                            // If it has a static ID, reconstruct a dummy label
                             if (!cycleMap.has(tx.staticCycleId)) {
                                 const isBill = tx.staticCycleId.endsWith('-bill');
                                 const parts = tx.staticCycleId.split('-');
@@ -1250,7 +1188,6 @@
                                 });
                             }
                         } else {
-                            // Fallback for older transactions
                             const effectiveDate = tx.settleDate || tx.date;
                             if (effectiveDate) {
                                 const c = getCycleInfo(new Date(effectiveDate), cycleType, billDay);
@@ -1361,8 +1298,6 @@
                     const effectiveDate = tx.settleDate || tx.date;
                     return effectiveDate && effectiveDate.startsWith(selectedCycleId);
                 });
-                // Fallback to manageCardFilter if historyCardFilter is not explicitly set, 
-                // though now historyCardFilter is the primary driver in the modal.
                 const effectiveCardFilter = selectedCardId || manageCardFilter;
                 if(effectiveCardFilter) periodTxs = periodTxs.filter(t => t.cardId === effectiveCardFilter);
             }
@@ -1392,11 +1327,13 @@
                     const catStr = tx.category || "📦 其他";
                     const icon = catStr.split(' ')[0] || "📦";
                     const settleHint = tx.settleDate ? `<span class="text-indigo-500 font-bold ml-1 text-[10px] bg-indigo-50 px-1 rounded">入帳: ${tx.settleDate.slice(5)}</span>` : '';
+                    let txName = tx.item || tx.category || "其他";
+                    let smallPayWarn = window.checkIsSmallPayment(txName) ? `<span title="可能為小額支付" class="text-xs ml-1">⚠️</span>` : '';
 
                     leftDiv.innerHTML = `
                         <div class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-sm shadow-sm flex-shrink-0">${icon}</div>
                         <div class="overflow-hidden">
-                            <div class="flex items-center gap-2"><h4 class="font-bold text-slate-700 text-xs truncate">${tx.item || tx.category || "其他"}</h4><span class="text-[9px] text-slate-400 bg-white px-1 rounded border border-slate-100 whitespace-nowrap">${card.name}</span></div>
+                            <div class="flex items-center gap-2"><h4 class="font-bold text-slate-700 text-xs truncate flex items-center">${txName} ${smallPayWarn}</h4><span class="text-[9px] text-slate-400 bg-white px-1 rounded border border-slate-100 whitespace-nowrap">${card.name}</span></div>
                             <p class="text-[9px] text-slate-400 mt-0.5 truncate">${tx.date} ${settleHint} ${tx.note ? '· '+tx.note : ''}</p>
                         </div>
                     `;
@@ -1493,12 +1430,8 @@
             document.getElementById('settingsModal').classList.remove('hidden');
             
             let defaultBillDay = 1;
-            let hasCsvBillDay = false;
-            if(currentUser === 'Lynn' && card.lynnBillDay) { defaultBillDay = card.lynnBillDay; hasCsvBillDay = true; }
-            if(currentUser === 'Andy' && card.andyBillDay) { defaultBillDay = card.andyBillDay; hasCsvBillDay = true; }
-
-            let mode = settings.cycleType;
-            if (!mode) { mode = hasCsvBillDay ? 'bill' : 'month'; }
+            let mode = settings.cycleType || 'month';
+            
             setCycleMode(mode);
             document.getElementById('settingBillDay').value = settings.billDay || defaultBillDay;
         }
@@ -1512,11 +1445,13 @@
                 btnMonth.classList.add('bg-indigo-500', 'text-white', 'border-transparent');
                 btnMonth.classList.remove('bg-white', 'text-slate-500');
                 btnBill.classList.remove('bg-indigo-500', 'text-white', 'border-transparent');
+                btnBill.classList.add('bg-white', 'text-slate-500');
                 group.classList.add('hidden');
             } else {
                 btnBill.classList.add('bg-indigo-500', 'text-white', 'border-transparent');
                 btnBill.classList.remove('bg-white', 'text-slate-500');
                 btnMonth.classList.remove('bg-indigo-500', 'text-white', 'border-transparent');
+                btnMonth.classList.add('bg-white', 'text-slate-500');
                 group.classList.remove('hidden'); group.classList.add('flex');
             }
             document.getElementById('settingsModal').dataset.mode = mode;
@@ -1525,9 +1460,11 @@
         window.saveCardSettings = function() {
             if(!editingCardId) return;
             const cycleType = document.getElementById('settingsModal').dataset.mode;
-            const billDay = parseInt(document.getElementById('settingBillDay').value);
-            const cap = parseFloat(document.getElementById('settingCap').value);
-            const min = parseFloat(document.getElementById('settingMin').value);
+            const billDay = parseInt(document.getElementById('settingBillDay').value) || 1;
+            const capStr = document.getElementById('settingCap').value;
+            const minStr = document.getElementById('settingMin').value;
+            const cap = capStr ? parseFloat(capStr) : 0;
+            const min = minStr ? parseFloat(minStr) : 0;
             
             cardSettings[editingCardId] = { cycleType, billDay, cap, min };
             localStorage.setItem(getStorageKey('card_settings'), JSON.stringify(cardSettings));
@@ -1535,7 +1472,215 @@
             renderView();
             showToast('設定已儲存');
         }
-        window.closeSettingsModal = function() { document.getElementById('settingsModal').classList.add('hidden'); }
+        
+        window.closeSettingsModal = function() { 
+            document.getElementById('settingsModal').classList.add('hidden'); 
+        }
+
+        // --- MIN REQUIREMENT TRANSACTIONS MODAL FUNCTIONS ---
+        window.openMinTxModal = function(cardId) {
+            currentMinCardId = cardId;
+            const card = allCardsData.find(c => c.id === cardId);
+            if(!card) return;
+            
+            document.getElementById('minTxCardName').innerText = `${card.name} 一般/低消`;
+            
+            const settings = cardSettings[cardId] || {};
+            let defaultBillDay = 1;
+            let cycleType = settings.cycleType || 'month';
+            const billDay = settings.billDay || defaultBillDay;
+
+            const cycleMap = new Map();
+            const currentCycle = getCycleInfo(new Date(), cycleType, billDay);
+            cycleMap.set(currentCycle.cycleId, currentCycle);
+
+            transactions.forEach(tx => {
+                if (tx.cardId === cardId) {
+                    if (tx.staticCycleId) {
+                        if (!cycleMap.has(tx.staticCycleId)) {
+                            const isBill = tx.staticCycleId.endsWith('-bill');
+                            const parts = tx.staticCycleId.split('-');
+                            const y = parts[0], m = parts[1];
+                            cycleMap.set(tx.staticCycleId, {
+                                cycleId: tx.staticCycleId,
+                                label: isBill ? `${y}年${m}月帳單` : `${y}年${m}月`,
+                                year: y,
+                                start: null, end: null
+                            });
+                        }
+                    } else {
+                        const effectiveDate = tx.settleDate || tx.date;
+                        if (effectiveDate) {
+                            const c = getCycleInfo(new Date(effectiveDate), cycleType, billDay);
+                            cycleMap.set(c.cycleId, c);
+                        }
+                    }
+                }
+            });
+
+            currentMinCycles = Array.from(cycleMap.values()).sort((a,b) => b.cycleId.localeCompare(a.cycleId));
+            
+            const select = document.getElementById('minTxCycleSelect');
+            select.innerHTML = '';
+            currentMinCycles.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c.cycleId;
+                opt.text = c.label;
+                if(c.cycleId === currentCycle.cycleId) {
+                    opt.text += ' (本期)';
+                }
+                select.appendChild(opt);
+            });
+            
+            select.value = currentCycle.cycleId; 
+            
+            document.getElementById('minTxModal').classList.remove('hidden');
+            renderMinTxList();
+        }
+
+        window.renderMinTxList = function() {
+            const cycleId = document.getElementById('minTxCycleSelect').value;
+            const container = document.getElementById('minTxListContainer');
+            container.innerHTML = '';
+            
+            const cycleDef = currentMinCycles.find(c => c.cycleId === cycleId);
+            
+            let periodTxs = transactions.filter(t => {
+                if (t.cardId !== currentMinCardId) return false;
+                if (!t.types || !t.types.includes('general')) return false;
+
+                if (t.staticCycleId) {
+                     return t.staticCycleId === cycleId;
+                }
+                if (cycleDef && cycleDef.start && cycleDef.end) {
+                    const effectiveDate = t.settleDate || t.date;
+                    return effectiveDate >= cycleDef.start && effectiveDate <= cycleDef.end;
+                }
+                return false;
+            });
+            
+            periodTxs.sort((a,b) => new Date(b.settleDate || b.date) - new Date(a.settleDate || a.date));
+            
+            let total = 0;
+            
+            if(periodTxs.length === 0) {
+                container.innerHTML = '<div class="text-center py-10 text-slate-400 text-sm">此期無 一般/低消 紀錄</div>';
+            } else {
+                periodTxs.forEach(tx => {
+                    total += Number(tx.amount);
+                    
+                    let txName = tx.item || tx.category;
+                    let smallPayWarn = window.checkIsSmallPayment(txName) ? `<span title="可能為小額支付" class="text-[10px] ml-1">⚠️</span>` : '';
+                    
+                    const dateDisplay = tx.settleDate ? `<span class="text-indigo-500 text-[10px] bg-indigo-50 px-1 rounded">入帳: ${tx.settleDate.slice(5)}</span>` : `<span class="text-slate-400 text-[10px]">${tx.date.slice(5)}</span>`;
+
+                    const row = document.createElement('div');
+                    row.className = "flex justify-between items-center p-3 mb-2 bg-white border border-slate-100 rounded-xl shadow-sm tx-row group";
+                    row.innerHTML = `
+                        <div class="flex items-center gap-3 overflow-hidden flex-1 cursor-pointer">
+                            <div class="overflow-hidden">
+                                <div class="flex items-center"><h4 class="font-bold text-slate-700 text-sm truncate">${txName}</h4> ${smallPayWarn}</div>
+                                <div class="mt-1">${dateDisplay} ${tx.note ? `<span class="text-[10px] text-slate-400 ml-1 truncate">· ${tx.note}</span>` : ''}</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 flex-shrink-0 ml-2">
+                            <span class="font-bold text-slate-600">$${Number(tx.amount).toLocaleString()}</span>
+                            <button onclick="openTransactionModal('${tx.id}')" class="w-7 h-7 flex items-center justify-center rounded-full bg-white border border-slate-200 text-slate-400 shadow-sm hover:text-indigo-600 hover:border-indigo-200 active:scale-95 transition-all"><i data-lucide="pencil" class="w-3.5 h-3.5"></i></button>
+                        </div>
+                    `;
+                    row.querySelector('.flex-1').onclick = () => openTransactionModal(tx.id);
+                    container.appendChild(row);
+                });
+            }
+            
+            document.getElementById('minTxTotalAmount').innerText = `$${total.toLocaleString()}`;
+            lucide.createIcons();
+        }
+
+        window.closeMinTxModal = function() {
+            document.getElementById('minTxModal').classList.add('hidden');
+        }
+
+        // --- BILL DATES FUNCTIONS ---
+        window.openBillDatesModal = function() {
+            const listContainer = document.getElementById('billDatesList');
+            listContainer.innerHTML = '';
+
+            const cardStats = allCardsData.map(card => {
+                const settings = cardSettings[card.id] || {};
+                let defaultBillDay = 1;
+                let cycleType = settings.cycleType || 'month';
+                const billDay = settings.billDay || defaultBillDay;
+                const currentCycleInfo = getCycleInfo(new Date(), cycleType, billDay);
+
+                const cardTxs = transactions.filter(t => {
+                    if (t.staticCycleId && t.cardId === card.id) return t.staticCycleId === currentCycleInfo.cycleId;
+                    const effectiveDate = t.settleDate || t.date;
+                    return t.cardId === card.id && effectiveDate >= currentCycleInfo.start && effectiveDate <= currentCycleInfo.end;
+                });
+
+                let totalSpent = 0;
+                let totalMin = 0;
+                cardTxs.forEach(tx => {
+                    const amt = Number(tx.amount);
+                    totalSpent += amt;
+                    if ((tx.types || []).includes('general')) totalMin += amt;
+                });
+
+                const min = settings.min || card.defaultMin || 0;
+                const hasWarning = (totalSpent > 0 && min > 0 && totalMin < min);
+
+                return { ...card, billDay, cycleType, totalSpent, min, totalMin, hasWarning };
+            });
+
+            cardStats.sort((a, b) => {
+                if (a.hasWarning !== b.hasWarning) return b.hasWarning - a.hasWarning;
+                if (a.billDay !== b.billDay) return a.billDay - b.billDay;
+                return a.bank.localeCompare(b.bank);
+            });
+
+            if (cardStats.length === 0) {
+                listContainer.innerHTML = '<div class="text-center py-5 text-slate-400 text-sm">尚無卡片資料</div>';
+            } else {
+                cardStats.forEach(card => {
+                    let dateStr = card.cycleType === 'bill' ? `每月 ${card.billDay} 日` : '依日曆月計算';
+                    let warningIcon = card.hasWarning ? '<span class="text-xl animate-pulse cursor-help" title="有消費但未達低消">‼️</span>' : '';
+                    let minStatus = '';
+                    if (card.min > 0) {
+                        if (card.hasWarning) {
+                            minStatus = `<div class="text-[10px] text-orange-600 font-bold mt-1 bg-orange-100 inline-block px-1.5 py-0.5 rounded border border-orange-200">差 $${(card.min - card.totalMin).toLocaleString()} 達低消</div>`;
+                        } else if (card.totalSpent > 0) {
+                            minStatus = `<div class="text-[10px] text-emerald-600 font-bold mt-1 bg-emerald-100 inline-block px-1.5 py-0.5 rounded border border-emerald-200">低消已達標 ✅</div>`;
+                        } else {
+                            minStatus = `<div class="text-[10px] text-slate-500 font-bold mt-1 inline-block bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">本期尚未消費</div>`;
+                        }
+                    } else {
+                        minStatus = `<div class="text-[10px] text-slate-400 font-bold mt-1 inline-block">無低消門檻</div>`;
+                    }
+
+                    const item = document.createElement('div');
+                    item.className = `flex justify-between items-center p-3 bg-white border ${card.hasWarning ? 'border-orange-300 shadow-md ring-1 ring-orange-100' : 'border-slate-100 shadow-sm'} rounded-xl relative transition-all`;
+                    item.innerHTML = `
+                        <div class="flex items-center gap-3 overflow-hidden">
+                            <span class="bank-badge ${card.color} scale-75 origin-left inline-block -mr-2">${card.bank}</span>
+                            <div>
+                                <div class="text-sm font-bold text-slate-700 flex items-center gap-1">${card.name} ${warningIcon}</div>
+                                <div class="text-[11px] text-indigo-500 font-bold mt-0.5 flex items-center gap-1"><i data-lucide="calendar-clock" class="w-3 h-3"></i> 結帳日: ${dateStr}</div>
+                                ${minStatus}
+                            </div>
+                        </div>
+                    `;
+                    listContainer.appendChild(item);
+                });
+            }
+
+            document.getElementById('billDatesModal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        window.closeBillDatesModal = function() {
+            document.getElementById('billDatesModal').classList.add('hidden');
+        }
 
         // --- SMALL PAY FUNCTIONS ---
         window.filterSmallPayByCity = function() {
